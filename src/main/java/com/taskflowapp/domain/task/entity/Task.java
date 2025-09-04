@@ -1,4 +1,4 @@
 package com.taskflowapp.domain.task.entity;
 
-public class Entity {
+public class Task {
 }
