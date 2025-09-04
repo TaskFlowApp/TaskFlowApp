@@ -2,6 +2,7 @@ package com.taskflowapp.domain.user.entity;
 
 import com.taskflowapp.common.entity.BaseEntity;
 import com.taskflowapp.domain.team.entity.Team;
+import com.taskflowapp.domain.user.enums.UserRole;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -30,7 +31,8 @@ public class User extends BaseEntity {
     private String password;
 
     @Column(nullable = false, length = 10)
-    private String role;
+    @Enumerated(EnumType.STRING)
+    private UserRole role;
 
     // 각자 작업 진행 중이라 우선 주석 처리 -> 향후 주석풀기
 //    @ManyToOne(fetch = FetchType.LAZY)
@@ -41,7 +43,7 @@ public class User extends BaseEntity {
             String username,
             String name,
             String password,
-            String role
+            UserRole role
     ) {
         this.email = email;
         this.username = username;
