@@ -36,6 +36,7 @@ public class User extends BaseEntity {
 
     // 각자 작업 진행 중이라 우선 주석 처리 -> 향후 주석풀기
 //    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "team_id", nullable = false)
 //    private Team team;
 
     public User(
