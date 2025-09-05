@@ -38,7 +38,7 @@ public class Activity {
     private String actionType;
 
     //활동 내용 상세 설명
-    @Column(nullable = false)
+    @Column(nullable = false, length = 255)
     private String content;
 
     //로그 생성 시간
