@@ -133,4 +133,9 @@ public class TaskService {
                 task.getUpdatedAt()
         );
     }
+
+    @Transactional
+    public void deleteTask(Long taskId){
+        taskRepository.deleteById(taskId);
+    }
 }

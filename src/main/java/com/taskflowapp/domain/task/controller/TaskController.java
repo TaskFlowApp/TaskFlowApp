@@ -65,4 +65,12 @@ public class TaskController {
         ApiResponse<TaskResponse> apiResponse = ApiResponse.success("작업 상태가 업데이되었습니다.",response);
         return ResponseEntity.ok(apiResponse);
     }
+
+    //작업 삭제
+    @DeleteMapping("/{taskId}")
+    public void deleteTask(
+            @PathVariable Long taskId
+    ){
+        taskService.deleteTask(taskId);
+    }
 }
