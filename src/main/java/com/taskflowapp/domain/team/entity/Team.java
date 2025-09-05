@@ -2,14 +2,14 @@ package com.taskflowapp.domain.team.entity;
 
 import com.taskflowapp.common.entity.BaseEntity;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "teams")
+@Builder
+@AllArgsConstructor
 public class Team extends BaseEntity {
 
     @Id
