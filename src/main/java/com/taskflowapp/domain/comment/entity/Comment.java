@@ -31,8 +31,7 @@ public class Comment extends BaseEntity {
     @Column(nullable = false, length = 100)
     private String content;
 
-    public Comment(Long id, Long userId, Long taskId, Long parentId, String content) {
-        this.id = id;
+    public Comment(Long userId, Long taskId, Long parentId, String content) {
         this.userId = userId;
         this.taskId = taskId;
         this.parentId = parentId;
