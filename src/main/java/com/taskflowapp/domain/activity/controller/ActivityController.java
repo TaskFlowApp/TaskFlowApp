@@ -10,4 +10,5 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/activities")
 public class ActivityController {
     private final ActivityService activityService;
+    // TODO : [GET /api/activites] 활동 로그 목록 조회 API 구현 예정
 }
