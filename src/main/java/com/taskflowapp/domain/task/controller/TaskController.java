@@ -4,6 +4,7 @@ import com.taskflowapp.common.response.ApiResponse;
 import com.taskflowapp.common.response.PageResponse;
 import com.taskflowapp.domain.task.dto.TaskCreateRequest;
 import com.taskflowapp.domain.task.dto.TaskResponse;
+import com.taskflowapp.domain.task.dto.TaskStatusUpdateRequest;
 import com.taskflowapp.domain.task.dto.TaskUpdateRequest;
 import com.taskflowapp.domain.task.service.TaskService;
 import lombok.RequiredArgsConstructor;
@@ -51,6 +52,17 @@ public class TaskController {
     ){
         TaskResponse response = taskService.updateTask(request, taskId);
         ApiResponse<TaskResponse> apiResponse = ApiResponse.success("Task가 수정되었습니다.",response);
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    //상태 업데이트
+    @PatchMapping("/{taskId}/status")
+    public ResponseEntity<ApiResponse<TaskResponse>> updateTaskStatus(
+            @RequestBody TaskStatusUpdateRequest request,
+            @PathVariable Long taskId
+    ){
+        TaskResponse response = taskService.updateTaskStatus(request, taskId);
+        ApiResponse<TaskResponse> apiResponse = ApiResponse.success("작업 상태가 업데이되었습니다.",response);
         return ResponseEntity.ok(apiResponse);
     }
 }

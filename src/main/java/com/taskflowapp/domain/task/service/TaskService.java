@@ -3,6 +3,7 @@ package com.taskflowapp.domain.task.service;
 import com.taskflowapp.common.response.PageResponse;
 import com.taskflowapp.domain.task.dto.TaskCreateRequest;
 import com.taskflowapp.domain.task.dto.TaskResponse;
+import com.taskflowapp.domain.task.dto.TaskStatusUpdateRequest;
 import com.taskflowapp.domain.task.dto.TaskUpdateRequest;
 import com.taskflowapp.domain.task.entity.Status;
 import com.taskflowapp.domain.task.entity.Task;
@@ -72,6 +73,7 @@ public class TaskService {
     }
 
     //작업 상세 조회
+    @Transactional
     public TaskResponse getTask(Long taskId){
         Task task = taskRepository.findById(taskId).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND,"존재하지 않는 Task입니다.")
@@ -91,6 +93,7 @@ public class TaskService {
     }
 
     //작업 수정 기능
+    @Transactional
     public TaskResponse updateTask(TaskUpdateRequest request, Long taskId){
         Task task = taskRepository.findById(taskId).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND,"존재하지 않는 작업입니다.")
@@ -105,6 +108,27 @@ public class TaskService {
                 task.getStatus(),
                 task.getAssignee().getId(),
                 //task.getAssignee,
+                task.getCreatedAt(),
+                task.getUpdatedAt()
+        );
+    }
+
+    //작업 상태 업데이트
+    @Transactional
+    public TaskResponse updateTaskStatus(TaskStatusUpdateRequest request, Long taskId){
+        Task task = taskRepository.findById(taskId).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND,"존재하지 않는 Task입니다.")
+        );
+        task.updateTaskStatus(request.getStatus());
+        return new TaskResponse(
+                task.getId(),
+                task.getTitle(),
+                task.getDescription(),
+                task.getDueDate(),
+                task.getPriority(),
+                task.getStatus(),
+                task.getAssignee().getId(),
+                //task.getAssignee(),
                 task.getCreatedAt(),
                 task.getUpdatedAt()
         );
