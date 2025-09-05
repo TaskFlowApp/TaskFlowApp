@@ -1,7 +1,7 @@
 package com.taskflowapp.domain.activity.entity;
 
-import com.taskflowapp.domain.task.entity.Task;
-import com.taskflowapp.domain.user.entity.User;
+//import com.taskflowapp.domain.task.entity.Task;
+//import com.taskflowapp.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,17 +21,17 @@ public class Activity {
     private Long id;
 
     //활동을 수행한 유저
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    //@ManyToOne(fetch = FetchType.LAZY)
+    //@JoinColumn(name = "user_id", nullable = false)
+    //private User user;
 
     /**
      * 활동 관련된 태스크
      * 로그인/로그아웃 등 태스크와 직접 관련 없는 경우는 null이 될 수 있음
      */
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "task_id")
-    private Task task;
+    //@ManyToOne(fetch = FetchType.LAZY)
+    //@JoinColumn(name = "task_id")
+    //private Task task;
 
     //활동 유형 ex)"TASK_CREATED"
     @Column(name = "action_type", nullable = false, length = 50)
@@ -46,9 +46,9 @@ public class Activity {
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    public Activity(User user, Task task, String actionType, String content) {
-        this.user = user;
-        this.task = task;
+    public Activity(/*User user, Task task,*/ String actionType, String content) {
+        //this.user = user;
+        //this.task = task;
         this.actionType = actionType;
         this.content = content;
     }
