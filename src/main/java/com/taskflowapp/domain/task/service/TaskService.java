@@ -19,7 +19,7 @@ public class TaskService {
     private final TaskRepository taskRepository;
     private final UserRepository userRepository;
 
-    //작업 생성 비즈니스 로직
+    //작업 생성
     @Transactional
     public TaskResponse createTask(TaskCreateRequest request){
         User assignee = userRepository.findById(request.assigneeId).orElseThrow(
