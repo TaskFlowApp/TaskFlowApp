@@ -10,8 +10,20 @@ spring:
       hibernate:
         show_sql: true
         format_sql: true
+
 # JWT 설정 추가
 jwt:
   secret:
     key: TXlTdXBlclNlY3JldEtleQ==TXlTdXBlclNlY3JldEtleQ==TXlTdXBlclNlY3JldEtleQ==   # 원하는 시크릿 키 입력(MySuperSecretKey를 Encode)
-  expiration: 1800                                                              # 만료 시간(30분)
+  expiration: 1800                                                                  # 만료 시간(30분)
+
+# API 기본 경로
+server:
+  servlet:
+    context-path: /api
+
+# 로그 레벨
+logging:
+  level:
+    org.springframework.security: DEBUG
+    org.springframework.web: DEBUG                                                      # 만료 시간(30분)

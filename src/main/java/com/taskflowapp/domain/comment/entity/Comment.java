@@ -29,17 +29,16 @@ public class Comment extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id", nullable = false)
-    private Comment parentComment;
+    private Comment parent;
 
     @Column(nullable = false, length = 100)
     private String content;
 
     @Builder
-    public Comment(User user, Task task, Comment parentComment, String content) {
+    public Comment(User user, Task task, Comment parent, String content) {
         this.user = user;
         this.task = task;
-        this.parentComment = parentComment;
+        this.parent = parent;
         this.content = content;
     }
-
 }
