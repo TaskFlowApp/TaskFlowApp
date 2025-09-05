@@ -17,17 +17,17 @@ public class Team extends BaseEntity {
     private Long id;
 
     @Column(nullable = false, unique = true, length = 50)
-    private String teamName;
+    private String name;
 
     @Column(nullable = false, length = 255)
-    private String teamDescription;
+    private String description;
 
     public Team (
-            String teamName,
-            String teamDescription
+            String name,
+            String description
     ){
-        this.teamName = teamName;
-        this.teamDescription = teamDescription;
+        this.name = name;
+        this.description = description;
     }
 
 
