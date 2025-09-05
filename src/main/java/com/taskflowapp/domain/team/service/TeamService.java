@@ -17,6 +17,11 @@ public class TeamService {
     // 팀 생성 //
     @Transactional
     public TeamResponse createTeam(TeamRequest teamRequest) {
+        // 팀 중복 에러
+        if (teamRepository.existsByName(teamRequest.getName())) {
+            throw new IllegalArgumentException("이미 존재하는 팀 이름입니다.");
+        }
+
 
         Team team = Team.builder()
                 .name(teamRequest.getName())
