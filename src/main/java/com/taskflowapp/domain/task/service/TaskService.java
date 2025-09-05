@@ -92,7 +92,7 @@ public class TaskService {
 
     //작업 수정 기능
     public TaskResponse updateTask(TaskUpdateRequest request, Long taskId){
-        Task task = taskRepository.findById(request.getAssigneeId()).orElseThrow(
+        Task task = taskRepository.findById(taskId).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND,"존재하지 않는 작업입니다.")
         );
         task.updateTask(request.getTitle(),request.getDescription(),request.getDueDate(),request.getPriority(),request.getStatus());
