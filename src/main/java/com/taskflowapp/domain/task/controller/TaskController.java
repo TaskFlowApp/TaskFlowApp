@@ -1,16 +1,15 @@
 package com.taskflowapp.domain.task.controller;
 
 import com.taskflowapp.common.response.ApiResponse;
+import com.taskflowapp.common.response.PageResponse;
 import com.taskflowapp.domain.task.dto.TaskCreateRequest;
 import com.taskflowapp.domain.task.dto.TaskResponse;
 import com.taskflowapp.domain.task.service.TaskService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -25,5 +24,13 @@ public class TaskController {
       TaskResponse response = taskService.createTask(request);
       ApiResponse<TaskResponse> apiResponse = ApiResponse.success("Task가 생성되었습니다.", response);
       return ResponseEntity.status(HttpStatus.CREATED).body(apiResponse);
+    }
+
+    //작업 목록 조회
+    @GetMapping
+    public ResponseEntity<ApiResponse<PageResponse<TaskResponse>>> getTasks(Pageable pageable){
+        PageResponse<TaskResponse> pageResponse = taskService.getTasks(pageable);
+        ApiResponse<PageResponse<TaskResponse>> apiResponse = ApiResponse.success("Task 목록을 조회했습니다.", pageResponse);
+        return ResponseEntity.ok(apiResponse);
     }
 }

@@ -1,5 +1,6 @@
 package com.taskflowapp.domain.task.service;
 
+import com.taskflowapp.common.response.PageResponse;
 import com.taskflowapp.domain.task.dto.TaskCreateRequest;
 import com.taskflowapp.domain.task.dto.TaskResponse;
 import com.taskflowapp.domain.task.entity.Status;
@@ -8,6 +9,9 @@ import com.taskflowapp.domain.task.repository.TaskRepository;
 import com.taskflowapp.domain.user.entity.User;
 import com.taskflowapp.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,5 +49,24 @@ public class TaskService {
                 //savedTask.getAssignee,
                 savedTask.getCreatedAt(),
                 savedTask.getUpdatedAt());
+    }
+
+    //작업 목록 조회
+    @Transactional(readOnly = true)
+    public PageResponse<TaskResponse> getTasks(Pageable pageable){
+        Page<Task> page = taskRepository.findAll(PageRequest.of(pageable.getPageNumber(), pageable.getPageSize()));
+        Page<TaskResponse> mappedPage = page.map(task -> new TaskResponse(
+                task.getId(),
+                task.getTitle(),
+                task.getDescription(),
+                task.getDueDate(),
+                task.getPriority(),
+                task.getStatus(),
+                task.getAssignee().getId(),
+                //task.getAssignee(),
+                task.getCreatedAt(),
+                task.getUpdatedAt()
+        ));
+        return PageResponse.of(mappedPage);
     }
 }
