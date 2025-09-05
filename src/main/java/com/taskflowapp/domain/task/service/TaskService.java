@@ -1,7 +1,7 @@
 package com.taskflowapp.domain.task.service;
 
 import com.taskflowapp.domain.task.dto.TaskCreateRequest;
-import com.taskflowapp.domain.task.dto.TaskCreateResponse;
+import com.taskflowapp.domain.task.dto.TaskResponse;
 import com.taskflowapp.domain.task.entity.Status;
 import com.taskflowapp.domain.task.entity.Task;
 import com.taskflowapp.domain.task.repository.TaskRepository;
@@ -21,7 +21,7 @@ public class TaskService {
 
     //작업 생성 비즈니스 로직
     @Transactional
-    public TaskCreateResponse createTask(TaskCreateRequest request){//매개변수에 Long userId 필요 토큰 생성 후
+    public TaskResponse createTask(TaskCreateRequest request){
         User assignee = userRepository.findById(request.assigneeId).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND,"존재하지 않는 유저 ID입니다.")
         );
@@ -34,7 +34,7 @@ public class TaskService {
                 .status(Status.TODO)
                 .build();
         Task savedTask = taskRepository.save(task);
-        return new TaskCreateResponse(
+        return new TaskResponse(
                 savedTask.getId(),
                 savedTask.getTitle(),
                 savedTask.getDescription(),

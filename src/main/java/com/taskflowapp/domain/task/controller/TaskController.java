@@ -2,7 +2,7 @@ package com.taskflowapp.domain.task.controller;
 
 import com.taskflowapp.common.response.ApiResponse;
 import com.taskflowapp.domain.task.dto.TaskCreateRequest;
-import com.taskflowapp.domain.task.dto.TaskCreateResponse;
+import com.taskflowapp.domain.task.dto.TaskResponse;
 import com.taskflowapp.domain.task.service.TaskService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -19,12 +19,11 @@ public class TaskController {
     private final TaskService taskService;
     //작업 생성
     @PostMapping
-    public ResponseEntity<ApiResponse<TaskCreateResponse>> saveTask(
+    public ResponseEntity<ApiResponse<TaskResponse>> saveTask(
             @RequestBody TaskCreateRequest request
-            //@Auth 인증인가로 토큰 받아서 user..id..를... 확인해야..
     ){
-      TaskCreateResponse response = taskService.createTask(request);
-      ApiResponse<TaskCreateResponse> apiResponse = ApiResponse.success("Task가 생성되었습니다.", response);
+      TaskResponse response = taskService.createTask(request);
+      ApiResponse<TaskResponse> apiResponse = ApiResponse.success("Task가 생성되었습니다.", response);
       return ResponseEntity.status(HttpStatus.CREATED).body(apiResponse);
     }
 }
