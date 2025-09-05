@@ -1,0 +1,38 @@
+package com.taskflowapp.domain.user.service;
+
+import com.taskflowapp.domain.security.JwtProvider;
+import com.taskflowapp.domain.user.dto.response.UserResponse;
+import com.taskflowapp.domain.user.entity.User;
+import com.taskflowapp.domain.user.enums.UserRole;
+import com.taskflowapp.domain.user.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
+
+@Service
+@RequiredArgsConstructor
+public class UserService {
+
+    private final UserRepository userRepository;
+    private final JwtProvider jwtProvider;
+    private final PasswordEncoder passwordEncoder;
+
+    // 현재 사용자 정보 조회
+    @Transactional
+    public UserResponse findUserInfo(String username) {
+        User user = userRepository.findByUsername(username).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다.")
+        );
+        return new UserResponse(
+                user.getId(),
+                user.getUsername(),
+                user.getEmail(),
+                user.getName(),
+                UserRole.USER,
+                user.getCreatedAt()
+        );
+    }
+}
