@@ -4,6 +4,7 @@ import com.taskflowapp.common.response.ApiResponse;
 import com.taskflowapp.common.response.PageResponse;
 import com.taskflowapp.domain.task.dto.TaskCreateRequest;
 import com.taskflowapp.domain.task.dto.TaskResponse;
+import com.taskflowapp.domain.task.dto.TaskUpdateRequest;
 import com.taskflowapp.domain.task.service.TaskService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -39,6 +40,17 @@ public class TaskController {
     public ResponseEntity<ApiResponse<TaskResponse>> getTask(@PathVariable Long taskId){
         TaskResponse response = taskService.getTask(taskId);
         ApiResponse<TaskResponse> apiResponse = ApiResponse.success("Task를 조회했습니다.",response);
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    //작업 수정
+    @PutMapping("/{taskId}")
+    public ResponseEntity<ApiResponse<TaskResponse>> updateTask(
+            @RequestBody TaskUpdateRequest request,
+            @PathVariable Long taskId
+    ){
+        TaskResponse response = taskService.updateTask(request, taskId);
+        ApiResponse<TaskResponse> apiResponse = ApiResponse.success("Task가 수정되었습니다.",response);
         return ResponseEntity.ok(apiResponse);
     }
 }

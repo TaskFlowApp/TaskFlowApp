@@ -3,6 +3,7 @@ package com.taskflowapp.domain.task.service;
 import com.taskflowapp.common.response.PageResponse;
 import com.taskflowapp.domain.task.dto.TaskCreateRequest;
 import com.taskflowapp.domain.task.dto.TaskResponse;
+import com.taskflowapp.domain.task.dto.TaskUpdateRequest;
 import com.taskflowapp.domain.task.entity.Status;
 import com.taskflowapp.domain.task.entity.Task;
 import com.taskflowapp.domain.task.repository.TaskRepository;
@@ -84,6 +85,26 @@ public class TaskService {
                 task.getStatus(),
                 task.getAssignee().getId(),
                 //task.getAssignee(),
+                task.getCreatedAt(),
+                task.getUpdatedAt()
+        );
+    }
+
+    //작업 수정 기능
+    public TaskResponse updateTask(TaskUpdateRequest request, Long taskId){
+        Task task = taskRepository.findById(request.getAssigneeId()).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND,"존재하지 않는 작업입니다.")
+        );
+        task.updateTask(request.getTitle(),request.getDescription(),request.getDueDate(),request.getPriority(),request.getStatus());
+        return new TaskResponse(
+                task.getId(),
+                task.getTitle(),
+                task.getDescription(),
+                task.getDueDate(),
+                task.getPriority(),
+                task.getStatus(),
+                task.getAssignee().getId(),
+                //task.getAssignee,
                 task.getCreatedAt(),
                 task.getUpdatedAt()
         );
