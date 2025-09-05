@@ -69,4 +69,23 @@ public class TaskService {
         ));
         return PageResponse.of(mappedPage);
     }
+
+    //작업 상세 조회
+    public TaskResponse getTask(Long taskId){
+        Task task = taskRepository.findById(taskId).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND,"존재하지 않는 Task입니다.")
+        );
+        return new TaskResponse(
+                task.getId(),
+                task.getTitle(),
+                task.getDescription(),
+                task.getDueDate(),
+                task.getPriority(),
+                task.getStatus(),
+                task.getAssignee().getId(),
+                //task.getAssignee(),
+                task.getCreatedAt(),
+                task.getUpdatedAt()
+        );
+    }
 }

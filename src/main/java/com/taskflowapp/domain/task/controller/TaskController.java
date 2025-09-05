@@ -33,4 +33,12 @@ public class TaskController {
         ApiResponse<PageResponse<TaskResponse>> apiResponse = ApiResponse.success("Task 목록을 조회했습니다.", pageResponse);
         return ResponseEntity.ok(apiResponse);
     }
+
+    //작업 상세 조회
+    @GetMapping("/{taskId}")
+    public ResponseEntity<ApiResponse<TaskResponse>> getTask(@PathVariable Long taskId){
+        TaskResponse response = taskService.getTask(taskId);
+        ApiResponse<TaskResponse> apiResponse = ApiResponse.success("Task를 조회했습니다.",response);
+        return ResponseEntity.ok(apiResponse);
+    }
 }
