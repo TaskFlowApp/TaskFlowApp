@@ -4,9 +4,11 @@ import com.taskflowapp.common.response.ApiResponse;
 import com.taskflowapp.domain.comment.dto.request.CommentCreateRequest;
 import com.taskflowapp.domain.comment.dto.response.CommentCreateResponse;
 import com.taskflowapp.domain.comment.service.CommentService;
+import com.taskflowapp.domain.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,10 +27,10 @@ public class CommentController {
     public ResponseEntity<ApiResponse<CommentCreateResponse>> createComment(
             @PathVariable Long taskId,
             @Validated @RequestBody CommentCreateRequest request,
-            @AuthenticationPrincipal UserDetailsImpl userDetails           /// @AuthenticationPrincipal: Spring Security를 사용할 때, 인증된 사용자 정보(Principal)를 컨트롤러 메서드의 파라미터로 간편하게 주입해 줌
+            @AuthenticationPrincipal UserDetailsImpl userDetails               /// @AuthenticationPrincipal: Spring Security를 사용할 때, 인증된 사용자 정보(Principal)를 컨트롤러 메서드의 파라미터로 간편하게 주입해 줌
     ) {
         return ResponseEntity.status(HttpStatus.CREATED).body(
-                ApiResponse.success("댓글이 생성되었습니다.", commentService.createComment(taskId, request, userDetails.getUserId())));
+                ApiResponse.success("댓글이 생성되었습니다.", commentService.createComment(taskId, request, userDetails)));
     }
 
     /**
