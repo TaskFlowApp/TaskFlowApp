@@ -31,4 +31,14 @@ public class TeamController {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.success("팀이 성공적으로 생성되었습니다.", createdTeam));
     }
+
+    // 팀 목록 조회 //
+    @GetMapping("/teams")
+    public ResponseEntity<ApiResponse<List<TeamResponse>>> findAllTeams(
+    ) {
+        List<TeamResponse> teamResponseList = teamService.getAllTeams();
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ApiResponse.success("팀 목록을 조회했습니다.", teamResponseList));
+    }
 }

@@ -43,4 +43,41 @@ public class TeamService {
                 // Collections.emptyList() : 변경 불가능한 빈 리스트 -> 명시적으로 '비어 있음' 보장
                 .build();
     }
+
+    // 팀 목록 조회 //
+    @Transactional(readOnly = true)
+    public List<TeamResponse> getAllTeams() {
+
+        // 1. 엔티티 저장 (DB 저장) //
+        List<Team> teams = teamRepository.findAll();
+
+        // 2. DTO 변환 (엔티티 리스트 -> DTO 리스트) //
+        List<TeamResponse> teamResponses = teams.stream()
+                .map(team -> TeamResponse.builder()
+                        .id(team.getId())
+                        .name(team.getName())
+                        .description(team.getDescription())
+                        .createdAt(team.getCreatedAt())
+                        .members(
+                                // Stream<User> 생성 //
+                                team.getMembers().stream()
+                                        // Stream<MemberResponseDto> 로 변환
+                                        .map( member -> MemberResponseDto.builder()
+                                                .id(member.getId())
+                                                .username(member.getUsername())
+                                                .name(member.getName())
+                                                .email(member.getEmail())
+                                                .role(member.getRole())
+                                                .createdAt(member.getCreatedAt())
+                                                .build()
+                                        )
+                                        // List<MemberResponseDto> 로 변환 //
+                                        .collect(Collectors.toList())
+                        )
+                        .build()
+                )
+                .collect(Collectors.toList());
+
+        return teamResponses;
+    }
 }
