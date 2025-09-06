@@ -1,6 +1,7 @@
 package com.taskflowapp.domain.user.service;
 
 import com.taskflowapp.domain.security.JwtProvider;
+import com.taskflowapp.domain.user.dto.response.AssigneeResponse;
 import com.taskflowapp.domain.user.dto.response.UserResponse;
 import com.taskflowapp.domain.user.entity.User;
 import com.taskflowapp.domain.user.enums.UserRole;
@@ -11,6 +12,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -34,5 +38,23 @@ public class UserService {
                 UserRole.USER,
                 user.getCreatedAt()
         );
+    }
+
+    // 새 작업(Task) 등록시 담당자 조희
+    @Transactional
+    public List<AssigneeResponse> findAllUser() {
+        List<User> users = userRepository.findAll();
+        List<AssigneeResponse> responseList = new ArrayList<>();
+
+        for (User user : users) {
+            responseList.add(new AssigneeResponse(
+                    user.getId(),
+                    user.getEmail(),
+                    user.getName(),
+                    user.getRole()
+            ));
+        }
+
+        return responseList;
     }
 }
