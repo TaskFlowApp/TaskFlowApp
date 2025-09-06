@@ -2,6 +2,7 @@ package com.taskflowapp.domain.user.controller;
 
 import com.taskflowapp.common.response.ApiResponse;
 import com.taskflowapp.domain.security.UserDetailsImpl;
+import com.taskflowapp.domain.user.dto.response.AssigneeResponse;
 import com.taskflowapp.domain.user.dto.response.MemberResponseDto;
 import com.taskflowapp.domain.user.dto.response.UserResponse;
 import com.taskflowapp.domain.user.repository.UserRepository;
@@ -41,5 +42,11 @@ public class UserController {
             @RequestParam Long teamId
     ) {
         return ResponseEntity.ok(ApiResponse.success("사용 가능한 사용자 목록을 조회했습니다.", memberService.findAllAvailableUsers(teamId)));
+    }
+
+    // 새 작업(Task) 등록시 담당자 조희
+    @GetMapping
+    public ResponseEntity<ApiResponse<List<AssigneeResponse>>> findAllUser() {
+        return ResponseEntity.ok(ApiResponse.success("요청이 성공적으로 처리되었습니다.", userService.findAllUser()));
     }
 }
