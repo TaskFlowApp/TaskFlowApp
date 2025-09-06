@@ -1,6 +1,6 @@
 package com.taskflowapp.domain.user.controller;
 
-import com.taskflowapp.common.ApiResponse;
+import com.taskflowapp.common.response.ApiResponse;
 import com.taskflowapp.domain.security.UserDetailsImpl;
 import com.taskflowapp.domain.user.dto.response.MemberResponseDto;
 import com.taskflowapp.domain.user.dto.response.UserResponse;
@@ -8,7 +8,6 @@ import com.taskflowapp.domain.user.repository.UserRepository;
 import com.taskflowapp.domain.user.service.MemberService;
 import com.taskflowapp.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;

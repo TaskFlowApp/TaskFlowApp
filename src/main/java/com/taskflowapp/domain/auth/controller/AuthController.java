@@ -1,6 +1,6 @@
 package com.taskflowapp.domain.auth.controller;
 
-import com.taskflowapp.common.ApiResponse;
+import com.taskflowapp.common.response.ApiResponse;
 import com.taskflowapp.domain.auth.dto.request.AuthLoginRequest;
 import com.taskflowapp.domain.auth.dto.request.AuthRegisterRequest;
 import com.taskflowapp.domain.auth.dto.response.AuthLoginResponse;
