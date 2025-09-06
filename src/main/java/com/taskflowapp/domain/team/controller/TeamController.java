@@ -8,10 +8,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -40,5 +37,19 @@ public class TeamController {
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ApiResponse.success("팀 목록을 조회했습니다.", teamResponseList));
+    }
+
+    // 특정 팀 조회 //
+    // 현재 프론트(팀관리 > 팀 탭 전환)에서 동작하는 게 아님
+    // 추후 검색 기능 구현 시 다시 테스트 예정
+    // DB 에서 정상 동작 확인 완료
+    @GetMapping("/teams/{teamId}")
+    public ResponseEntity<ApiResponse<TeamResponse>> findTeamById(
+            @PathVariable Long teamId
+    ) {
+        TeamResponse teamResponse = teamService.getTeam(teamId);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ApiResponse.success("팀 정보를 조회했습니다.",  teamResponse));
     }
 }

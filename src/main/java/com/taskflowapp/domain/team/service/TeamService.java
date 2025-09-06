@@ -5,6 +5,8 @@ import com.taskflowapp.domain.team.dto.TeamResponse;
 import com.taskflowapp.domain.team.entity.Team;
 import com.taskflowapp.domain.team.repository.TeamRepository;
 import com.taskflowapp.domain.user.dto.response.MemberResponseDto;
+import com.taskflowapp.domain.user.entity.User;
+import com.taskflowapp.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +20,7 @@ import java.util.stream.Collectors;
 public class TeamService {
 
     private final TeamRepository teamRepository;
+    private final UserRepository userRepository;
 
     // 팀 생성 //
     @Transactional
@@ -79,5 +82,39 @@ public class TeamService {
                 .collect(Collectors.toList());
 
         return teamResponses;
+    }
+
+    // 특정 팀 조회 //
+    // 현재 프론트(팀관리 > 팀 탭 전환)에서 동작하는 게 아님
+    // 추후 검색 기능 구현 시 다시 테스트 예정
+    // DB 에서 정상 동작 확인 완료
+    @Transactional(readOnly = true)
+    public TeamResponse getTeam(Long teamId) {
+
+        // 1. id 조회
+        Team team = teamRepository.findById(teamId).orElseThrow(
+                () -> new IllegalArgumentException("해당하는 팀이 없습니다.")
+        );
+
+        // 2. dto 변환
+        return TeamResponse.builder()
+                .id(team.getId())
+                .name(team.getName())
+                .description(team.getDescription())
+                .createdAt(team.getCreatedAt())
+                .members(
+                        team.getMembers().stream()
+                                .map(member -> MemberResponseDto.builder()
+                                        .id(member.getId())
+                                        .username(member.getUsername())
+                                        .name(member.getName())
+                                        .email(member.getEmail())
+                                        .role(member.getRole())
+                                        .createdAt(member.getCreatedAt())
+                                        .build()
+                                )
+                                .collect(Collectors.toList())
+                )
+                .build();
     }
 }
