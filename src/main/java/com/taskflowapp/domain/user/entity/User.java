@@ -4,13 +4,13 @@ import com.taskflowapp.common.entity.BaseEntity;
 import com.taskflowapp.domain.team.entity.Team;
 import com.taskflowapp.domain.user.enums.UserRole;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Builder
 @Table(name = "users")
 public class User extends BaseEntity {
 
@@ -35,9 +35,9 @@ public class User extends BaseEntity {
     private UserRole role;
 
     // 각자 작업 진행 중이라 우선 주석 처리 -> 향후 주석풀기
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "team_id", nullable = false)
-//    private Team team;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "team_id")
+    private Team team;
 
     public User(
             String email,
@@ -51,5 +51,9 @@ public class User extends BaseEntity {
         this.name = name;
         this.password = password;
         this.role = role;
+    }
+
+    public void changeTeam(Team team) {
+        this.team = team;
     }
 }
