@@ -1,12 +1,14 @@
 package com.taskflowapp.domain.user.controller;
 
 import com.taskflowapp.common.response.ApiResponse;
+import com.taskflowapp.domain.security.UserDetailsImpl;
 import com.taskflowapp.domain.team.dto.TeamResponse;
 import com.taskflowapp.domain.user.dto.request.MemberRequestDto;
 import com.taskflowapp.domain.user.dto.response.MemberResponseDto;
 import com.taskflowapp.domain.user.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,15 +21,11 @@ public class MemberController {
 
     @PostMapping("/members")
     public ResponseEntity<ApiResponse<TeamResponse>> addMember(
-//            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
             @PathVariable Long teamId,
             @RequestBody MemberRequestDto memberRequestDto
     ) {
-//        if (userDetails == null) {
-//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-//                    .body(ApiResponse.error("인증이 필요합니다"));
-//        }
-        TeamResponse teamResponse = memberService.addMember(teamId, memberRequestDto);
+        TeamResponse teamResponse = memberService.addMember(userDetails, teamId, memberRequestDto);
 
         return ResponseEntity.ok(ApiResponse.success("팀 멤버 추가 성공", teamResponse));
     }
@@ -44,10 +42,11 @@ public class MemberController {
     // 팀 멤버 제거
     @DeleteMapping("/members/{userId}")
     public ResponseEntity<ApiResponse<TeamResponse>> deleteMember(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
             @PathVariable Long teamId,
             @PathVariable Long userId
     ) {
-        TeamResponse teamResponse = memberService.deleteMember(teamId, userId);
+        TeamResponse teamResponse = memberService.deleteMember(userDetails, teamId, userId);
         return ResponseEntity.ok(ApiResponse.success("멤버가 성공적으로 제거되었습니다.", teamResponse));
     }
 }
