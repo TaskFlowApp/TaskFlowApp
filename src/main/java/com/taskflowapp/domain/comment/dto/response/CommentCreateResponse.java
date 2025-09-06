@@ -1,6 +1,7 @@
 package com.taskflowapp.domain.comment.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.taskflowapp.domain.user.dto.response.UserResponse;
 import lombok.Builder;
 
 import java.time.LocalDateTime;
