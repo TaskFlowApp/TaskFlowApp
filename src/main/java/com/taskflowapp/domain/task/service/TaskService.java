@@ -8,6 +8,7 @@ import com.taskflowapp.domain.task.dto.TaskUpdateRequest;
 import com.taskflowapp.domain.task.entity.Status;
 import com.taskflowapp.domain.task.entity.Task;
 import com.taskflowapp.domain.task.repository.TaskRepository;
+import com.taskflowapp.domain.user.dto.response.AssigneeResponse;
 import com.taskflowapp.domain.user.entity.User;
 import com.taskflowapp.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -48,7 +49,11 @@ public class TaskService {
                 savedTask.getPriority(),
                 savedTask.getStatus(),
                 savedTask.getAssignee().getId(),
-                //savedTask.getAssignee,
+                new AssigneeResponse(
+                        savedTask.getAssignee().getId(),
+                        savedTask.getAssignee().getEmail(),
+                        savedTask.getAssignee().getName(),
+                        savedTask.getAssignee().getRole()),
                 savedTask.getCreatedAt(),
                 savedTask.getUpdatedAt());
     }
@@ -65,7 +70,10 @@ public class TaskService {
                 task.getPriority(),
                 task.getStatus(),
                 task.getAssignee().getId(),
-                //task.getAssignee(),
+                new AssigneeResponse(task.getAssignee().getId(),
+                        task.getAssignee().getEmail(),
+                        task.getAssignee().getName(),
+                        task.getAssignee().getRole()),
                 task.getCreatedAt(),
                 task.getUpdatedAt()
         ));
@@ -86,7 +94,10 @@ public class TaskService {
                 task.getPriority(),
                 task.getStatus(),
                 task.getAssignee().getId(),
-                //task.getAssignee(),
+                new AssigneeResponse(task.getAssignee().getId(),
+                        task.getAssignee().getEmail(),
+                        task.getAssignee().getName(),
+                        task.getAssignee().getRole()),
                 task.getCreatedAt(),
                 task.getUpdatedAt()
         );
@@ -107,7 +118,11 @@ public class TaskService {
                 task.getPriority(),
                 task.getStatus(),
                 task.getAssignee().getId(),
-                //task.getAssignee,
+                new AssigneeResponse(
+                        task.getAssignee().getId(),
+                        task.getAssignee().getEmail(),
+                        task.getAssignee().getName(),
+                        task.getAssignee().getRole()),
                 task.getCreatedAt(),
                 task.getUpdatedAt()
         );
@@ -128,7 +143,11 @@ public class TaskService {
                 task.getPriority(),
                 task.getStatus(),
                 task.getAssignee().getId(),
-                //task.getAssignee(),
+                new AssigneeResponse(
+                        task.getAssignee().getId(),
+                        task.getAssignee().getEmail(),
+                        task.getAssignee().getName(),
+                        task.getAssignee().getRole()),
                 task.getCreatedAt(),
                 task.getUpdatedAt()
         );
