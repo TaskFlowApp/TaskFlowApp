@@ -6,7 +6,8 @@ import com.taskflowapp.domain.comment.entity.Comment;
 import com.taskflowapp.domain.comment.repository.CommentRepository;
 import com.taskflowapp.domain.security.UserDetailsImpl;
 import com.taskflowapp.domain.task.entity.Task;
-import com.taskflowapp.domain.user.dto.response.UserResponse;
+import com.taskflowapp.domain.task.repository.TaskRepository;
+import com.taskflowapp.domain.user.dto.response.MemberResponseDto;
 import com.taskflowapp.domain.user.entity.User;
 import com.taskflowapp.domain.user.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -20,6 +21,7 @@ public class CommentService {
 
     private final CommentRepository commentRepository;
     private final UserRepository userRepository;
+    private final TaskRepository taskRepository;
 
     // 댓글 생성
     @Transactional
@@ -53,23 +55,25 @@ public class CommentService {
                 .build();
         Comment createdComment = commentRepository.save(comment);
 
-        return CommentCreateResponse.builder()
-                .id(createdComment.getId())
-                .content(createdComment.getContent())
-                .taskId(task.getId())
-                .userId(user.getId())
-                .user(
-                        UserResponse.builder()
-                                .id
-                                .username
-                                .name
-                                .email
-                                .role
-                                .build()
-                )
-                .parentId(parent != null ? parent.getId() : null)       /// parent가 존재하면 parentId를 설정, parent가 없으면 null 처리
-                .createdAt(createdComment.getCreatedAt())
-                .updatedAt(createdComment.getUpdatedAt())
-                .build();
+        // 정적 팩토리 메서드 사용
+        return CommentCreateResponse.from(createdComment, user, task);
+//        return CommentCreateResponse.builder()
+//                .id(createdComment.getId())
+//                .content(createdComment.getContent())
+//                .taskId(task.getId())
+//                .userId(user.getId())
+//                .user(
+//                        MemberResponseDto.builder()
+//                                .id(user.getId())
+//                                .username(user.getUsername())
+//                                .name(user.getName())
+//                                .email(user.getEmail())
+//                                .role(user.getRole())
+//                                .build()
+//                )
+//                .parentId(parent != null ? parent.getId() : null)       /// parent가 존재하면 parentId를 설정, parent가 없으면 null 처리
+//                .createdAt(createdComment.getCreatedAt())
+//                .updatedAt(createdComment.getUpdatedAt())
+//                .build();
     }
 }

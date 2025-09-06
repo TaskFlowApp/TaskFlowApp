@@ -1,7 +1,10 @@
 package com.taskflowapp.domain.comment.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.taskflowapp.domain.user.dto.response.UserResponse;
+import com.taskflowapp.domain.comment.entity.Comment;
+import com.taskflowapp.domain.task.entity.Task;
+import com.taskflowapp.domain.user.dto.response.MemberResponseDto;
+import com.taskflowapp.domain.user.entity.User;
 import lombok.Builder;
 
 import java.time.LocalDateTime;
@@ -14,9 +17,22 @@ public record CommentCreateResponse(
         String content,
         Long taskId,
         Long userId,
-        UserResponse user,
+        MemberResponseDto user,
         Long parentId,
         LocalDateTime createdAt,
         LocalDateTime updatedAt
 ) {
+    // 정적 팩토리 메서드
+    public static CommentCreateResponse from(Comment comment, User user, Task task) {
+        return new CommentCreateResponse(
+                comment.getId(),
+                comment.getContent(),
+                task.getId(),
+                user.getId(),
+                MemberResponseDto.from(user),
+                comment.getParent() != null ? comment.getParent().getId() : null,
+                comment.getCreatedAt(),
+                comment.getUpdatedAt()
+        );
+    }
 }
