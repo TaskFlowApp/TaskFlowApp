@@ -1,11 +1,13 @@
 package com.taskflowapp.domain.user.service;
 
+import com.taskflowapp.domain.security.UserDetailsImpl;
 import com.taskflowapp.domain.team.dto.TeamResponse;
 import com.taskflowapp.domain.team.entity.Team;
 import com.taskflowapp.domain.team.repository.TeamRepository;
 import com.taskflowapp.domain.user.dto.request.MemberRequestDto;
 import com.taskflowapp.domain.user.dto.response.MemberResponseDto;
 import com.taskflowapp.domain.user.entity.User;
+import com.taskflowapp.domain.user.enums.UserRole;
 import com.taskflowapp.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -25,7 +27,7 @@ public class MemberService {
     private final TeamRepository teamRepository;
 
     // 팀 멤버 추가!
-    public TeamResponse addMember(Long teamId, MemberRequestDto memberRequestDto) {
+    public TeamResponse addMember(UserDetailsImpl userDetails, Long teamId, MemberRequestDto memberRequestDto) {
         User user = userRepository.findById(memberRequestDto.getUserId()).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "사용자를 찾을 수 없습니다.")
         );
@@ -33,10 +35,18 @@ public class MemberService {
                 () -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "사용자를 찾을 수 없습니다.")
         );
 
-        // 이미 해당 팀에 멤버(유저)가 추가되어 있다면 (멤버 중복 방지)
-        if (user.getTeam() != null && Objects.equals(user.getTeam().getId(), team.getId())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "사용자를 찾을 수 없습니다.");
+        // 로그인한 유저가 관리자일 때 관리자는 모든 유저를 관리할 수 있지만 일반사용자는 본인의 상태(팀)만 변경할 수 있다.
+        if (!Objects.equals(userDetails.getAuthUser().getRole(), UserRole.ADMIN)) {
+            if (!Objects.equals(userDetails.getAuthUser().getId(), user.getId())) {
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "일반 사용자는 본인만 팀에 추가할 수 있습니다.");
+            }
         }
+
+        // 불필요한 코드이지만 혹시 몰라서 주석처리 했음.
+//        // 이미 해당 팀에 멤버(유저)가 추가되어 있다면 (멤버 중복 방지)
+//        if (user.getTeam() != null && Objects.equals(user.getTeam().getId(), team.getId())) {
+//            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "이미 추가된 유저입니다.");
+//        }
 
         // 연관관계 설정
         user.changeTeam(team);            // 주인 쪽 설정
@@ -45,14 +55,7 @@ public class MemberService {
 
         // 응답 Dto 구성
         List<MemberResponseDto> members = team.getMembers().stream()
-                .map(selectUser -> MemberResponseDto.builder()
-                        .id(selectUser.getId())
-                        .username(selectUser.getUsername())
-                        .name(selectUser.getName())
-                        .email(selectUser.getEmail())
-                        .role(selectUser.getRole())
-                        .createdAt(selectUser.getCreatedAt())
-                        .build())
+                .map(MemberResponseDto::from)
                 .collect(Collectors.toList());
 
         return TeamResponse.builder()
@@ -73,14 +76,7 @@ public class MemberService {
         List<User> users = userRepository.findAll();
         List<MemberResponseDto> availableMembers = users.stream()
                 .filter(user -> user.getTeam() == null || !Objects.equals(user.getTeam().getId(), teamId))
-                .map(user -> MemberResponseDto.builder()
-                        .id(user.getId())
-                        .username(user.getUsername())
-                        .name(user.getName())
-                        .email(user.getEmail())
-                        .role(user.getRole())
-                        .createdAt(user.getCreatedAt())
-                        .build())
+                .map(MemberResponseDto::from)
                 .collect(Collectors.toList());
         return availableMembers;
     }
@@ -94,28 +90,30 @@ public class MemberService {
         List<User> users = userRepository.findAll();
         List<MemberResponseDto> members = users.stream()
                 .filter(user -> user.getTeam() != null)
-                .map(user -> MemberResponseDto.builder()
-                        .id(user.getId())
-                        .username(user.getUsername())
-                        .name(user.getName())
-                        .email(user.getEmail())
-                        .role(user.getRole())
-                        .createdAt(user.getCreatedAt())
-                        .build())
+                .map(MemberResponseDto::from)
                 .collect(Collectors.toList());
         return members;
     }
 
     // 팀 멤버 제거
-    public TeamResponse deleteMember(Long teamId, Long userId) {
+    public TeamResponse deleteMember(UserDetailsImpl userDetails, Long teamId, Long userId) {
         Team team = teamRepository.findById(teamId).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "팀을 찾을 수 없습니다")
         );
         User user = userRepository.findById(userId).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "사용자가 팀 멤버가 아닙니다")
         );
+
+        // 그 어떠한 팀에도 속하지 않은 유저이거나 해당 유저가 현재 선택한 팀에 포함된 유저가 아닐 경우
         if (user.getTeam() == null || !Objects.equals(user.getTeam().getId(), team.getId())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "사용자를 찾을 수 없습니다.");
+        }
+
+        // 로그인한 유저가 관리자일 때 관리자는 모든 유저를 관리할 수 있지만 일반사용자는 본인의 상태(팀)만 변경할 수 있다.
+        if (!Objects.equals(userDetails.getAuthUser().getRole(), UserRole.ADMIN)) {
+            if (!Objects.equals(userDetails.getAuthUser().getId(), user.getId())) {
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "관리자 권한입니다.");
+            }
         }
 
         // 연관관계 제거
@@ -124,14 +122,7 @@ public class MemberService {
         userRepository.save(user); // 주인 쪽 저장
 
         List<MemberResponseDto> members = team.getMembers().stream()
-                .map(selectUser -> MemberResponseDto.builder()
-                        .id(selectUser.getId())
-                        .username(selectUser.getUsername())
-                        .name(selectUser.getName())
-                        .email(selectUser.getEmail())
-                        .role(selectUser.getRole())
-                        .createdAt(selectUser.getCreatedAt())
-                        .build())
+                .map(MemberResponseDto::from)
                 .collect(Collectors.toList());
         return TeamResponse.builder()
                 .id(team.getId())
