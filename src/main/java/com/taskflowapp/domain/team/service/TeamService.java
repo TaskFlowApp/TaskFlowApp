@@ -47,7 +47,7 @@ public class TeamService {
                 .build();
     }
 
-    // 팀 목록 조회 //
+    // 팀 전체 목록 조회 //
     @Transactional(readOnly = true)
     public List<TeamResponse> getAllTeams() {
 
@@ -115,6 +115,40 @@ public class TeamService {
                                 )
                                 .collect(Collectors.toList())
                 )
+                .build();
+    }
+
+    // 팀 수정 //
+    @Transactional
+    public TeamResponse updateTeam(TeamRequest teamRequest, Long teamId) {
+
+        Team team = teamRepository.findById(teamId).orElseThrow(
+                () -> new IllegalArgumentException("팀을 찾을 수 없습니다.")
+        );
+
+        team.changeTeam(
+                teamRequest.getName(),
+                teamRequest.getDescription()
+        );
+
+        teamRepository.save(team);
+
+        return TeamResponse.builder()
+                .id(team.getId())
+                .name(team.getName())
+                .description(team.getDescription())
+                .createdAt(team.getCreatedAt())
+                .members(
+                        team.getMembers().stream()
+                                .map(member -> MemberResponseDto.builder()
+                                        .id(member.getId())
+                                        .username(member.getUsername())
+                                        .name(member.getName())
+                                        .email(member.getEmail())
+                                        .role(member.getRole())
+                                        .createdAt(member.getCreatedAt())
+                                        .build())
+                                .collect(Collectors.toList()))
                 .build();
     }
 }

@@ -6,6 +6,7 @@ import com.taskflowapp.domain.team.dto.TeamResponse;
 import com.taskflowapp.domain.team.service.TeamService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -51,5 +52,17 @@ public class TeamController {
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ApiResponse.success("팀 정보를 조회했습니다.",  teamResponse));
+    }
+
+    // 팀 수정 //
+    @PutMapping("/teams/{teamId}")
+    public ResponseEntity<ApiResponse<TeamResponse>> updateTeam(
+            @Valid @RequestBody TeamRequest teamRequest,
+            @PathVariable Long teamId
+    ) {
+        TeamResponse teamUpdateResponse = teamService.updateTeam(teamRequest, teamId);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ApiResponse.success("팀 정보가 성공적으로 업데이트되었습니다.", teamUpdateResponse));
     }
 }
