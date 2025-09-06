@@ -29,12 +29,12 @@ public class AuthService {
     public AuthRegisterResponse register(AuthRegisterRequest request) {
         // 유저네임 중복 여부 확인 -> 명세서에 있음
         if (userRepository.existsByUsername(request.getUsername())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "이미 존재하는 사용자명입니다");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "이미 존재하는 아이디입니다.");    // 명세서상 메세지 내용: "이미 존재하는 사용자명입니다.". Conflict라고 하는게 더 정확하나 명세서대로 진행
         }
 
         // 이메일 중복 여부 확인 -> 명세서에 없음
         if (userRepository.existsByEmail(request.getEmail())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "이미 존재하는 이메일입니다");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "이미 존재하는 이메일입니다.");
         }
 
         // 비밀번호 암호화
@@ -62,10 +62,10 @@ public class AuthService {
     @Transactional(readOnly = true)
     public AuthLoginResponse login(AuthLoginRequest request) {
         User user = userRepository.findByUsername(request.getUsername()).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "이미 존재하는 사용자명입니다")
+                () -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "잘못된 아이디 또는 비밀번호입니다.")    // 명세서상 메세지 내용: "잘못된 사용자명 또는 비밀번호입니다."
         );
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "잘못된 사용자명 또는 비밀번호입니다");
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "잘못된 아이디 또는 비밀번호입니다.");
         }
         TokenPayload payload = jwtProvider.createTokenPayload(user.getUsername());
         String accessToken = jwtProvider.createToken(payload);
