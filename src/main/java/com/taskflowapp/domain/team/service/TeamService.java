@@ -1,5 +1,6 @@
 package com.taskflowapp.domain.team.service;
 
+import com.taskflowapp.domain.team.dto.DeleteTeamResponse;
 import com.taskflowapp.domain.team.dto.TeamRequest;
 import com.taskflowapp.domain.team.dto.TeamResponse;
 import com.taskflowapp.domain.team.entity.Team;
@@ -150,5 +151,18 @@ public class TeamService {
                                         .build())
                                 .collect(Collectors.toList()))
                 .build();
+    }
+
+    // 팀 삭제 //
+    @Transactional
+    public DeleteTeamResponse deleteTeam(Long teamId) {
+
+        Team team = teamRepository.findById(teamId).orElseThrow(
+                () -> new IllegalArgumentException("팀을 찾을 수 없습니다.")
+        );
+
+        teamRepository.delete(team);
+
+        return new DeleteTeamResponse("팀이 성공적으로 삭제되었습니다");
     }
 }

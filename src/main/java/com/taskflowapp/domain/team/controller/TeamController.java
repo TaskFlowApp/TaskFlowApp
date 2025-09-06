@@ -1,6 +1,7 @@
 package com.taskflowapp.domain.team.controller;
 
 import com.taskflowapp.common.response.ApiResponse;
+import com.taskflowapp.domain.team.dto.DeleteTeamResponse;
 import com.taskflowapp.domain.team.dto.TeamRequest;
 import com.taskflowapp.domain.team.dto.TeamResponse;
 import com.taskflowapp.domain.team.service.TeamService;
@@ -64,5 +65,17 @@ public class TeamController {
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ApiResponse.success("팀 정보가 성공적으로 업데이트되었습니다.", teamUpdateResponse));
+    }
+
+    // 팀 삭제 //
+    @DeleteMapping("/teams/{teamId}")
+    public ResponseEntity<ApiResponse<DeleteTeamResponse>> deleteTeam(
+            @PathVariable Long teamId
+    ) {
+        DeleteTeamResponse deleteTeamResponse = teamService.deleteTeam(teamId);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ApiResponse.success("팀이 성공적으로 삭제되었습니다.", deleteTeamResponse));
+
     }
 }
