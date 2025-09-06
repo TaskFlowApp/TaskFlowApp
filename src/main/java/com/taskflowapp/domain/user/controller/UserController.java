@@ -26,11 +26,6 @@ public class UserController {
     public ResponseEntity<ApiResponse<UserResponse>> findUserInfo(
             @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
-        if (userDetails == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(ApiResponse.error("인증이 필요합니다"));
-        }
-
         // userDetails에서 username 꺼내서 서비스 호출
         UserResponse userResponse = userService.findUserInfo(userDetails.getUsername());
         return ResponseEntity.ok(
