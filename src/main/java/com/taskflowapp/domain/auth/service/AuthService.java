@@ -40,13 +40,19 @@ public class AuthService {
         // 비밀번호 암호화
         String encodedPassword = passwordEncoder.encode(request.getPassword());
 
+        // Role 결정
+        UserRole role = UserRole.fromRegistration(
+                request.getUsername(),
+                request.getEmail()
+        );
+
         // 유저 생성
         User savedUser = new User(
                 request.getEmail(),
                 request.getUsername(),
                 request.getName(),
                 encodedPassword,
-                UserRole.USER
+                role
         );
 
         userRepository.save(savedUser);
@@ -54,6 +60,7 @@ public class AuthService {
                 savedUser.getId(),
                 savedUser.getUsername(),
                 savedUser.getEmail(),
+                savedUser.getName(),
                 savedUser.getRole(),
                 savedUser.getCreatedAt());
     }
