@@ -2,6 +2,7 @@ package com.taskflowapp.domain.auth.service;
 
 import com.taskflowapp.domain.auth.dto.request.AuthLoginRequest;
 import com.taskflowapp.domain.auth.dto.request.AuthRegisterRequest;
+import com.taskflowapp.domain.auth.dto.request.AuthWithdrawRequest;
 import com.taskflowapp.domain.auth.dto.response.AuthLoginResponse;
 import com.taskflowapp.domain.auth.dto.response.AuthRegisterResponse;
 import com.taskflowapp.domain.security.JwtProvider;
@@ -83,4 +84,16 @@ public class AuthService {
     // 로그아웃
 
     // 회원탈퇴
+    @Transactional
+    public void withdraw(String username, AuthWithdrawRequest request) {
+        User user = userRepository.findByUsername(username).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND)
+        );
+
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다.");    // 비밀번호 불일치면 Unauthorized가 적합한듯 하지만 명세서상 Bad Request
+        }
+
+        userRepository.delete(user);
+    }
 }
