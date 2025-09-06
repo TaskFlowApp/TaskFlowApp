@@ -1,8 +1,12 @@
 package com.taskflowapp.domain.team.entity;
 
 import com.taskflowapp.common.entity.BaseEntity;
+import com.taskflowapp.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -21,6 +25,9 @@ public class Team extends BaseEntity {
 
     @Column(nullable = false, length = 255)
     private String description;
+
+    @OneToMany(mappedBy = "team")
+    private List<User> members; // 멤버의 리스트를 참조하기 위해
 
     public Team (
             String name,
