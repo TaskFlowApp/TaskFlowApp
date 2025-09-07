@@ -4,7 +4,6 @@ import com.taskflowapp.domain.security.JwtProvider;
 import com.taskflowapp.domain.user.dto.response.AssigneeResponse;
 import com.taskflowapp.domain.user.dto.response.UserResponse;
 import com.taskflowapp.domain.user.entity.User;
-import com.taskflowapp.domain.user.enums.UserRole;
 import com.taskflowapp.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -35,7 +34,7 @@ public class UserService {
                 user.getUsername(),
                 user.getEmail(),
                 user.getName(),
-                UserRole.USER,
+                user.getRole(),    // DB에서 가져온 실제 역할 반환
                 user.getCreatedAt()
         );
     }
