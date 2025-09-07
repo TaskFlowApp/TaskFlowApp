@@ -30,7 +30,7 @@ public class CommentService {
     private final UserRepository userRepository;
     private final TaskRepository taskRepository;
 
-    // 댓글 생성
+    /// Comment 생성
     @Transactional
     public CommentResponse createComment(
             Long taskId,
@@ -66,20 +66,24 @@ public class CommentService {
         return CommentResponse.from(createdComment, user, taskId);
     }
 
-    // Task의 Comment 목록 조회
+    /// Task의 Comment 목록 조회
     @Transactional(readOnly = true)
     public CommentPageResponse getAllComments(Long taskId, Pageable pageable) {
-
+        // Task 존재 여부 확인 (실제 조회 결과는 사용하지 않음)
         taskRepository.findById(taskId);
 
+        // 부모 댓글 페이징 조회
         Page<Comment> parentPage = commentRepository.findByTaskIdAndParentIsNull(taskId, pageable);
         List<Comment> parents = parentPage.getContent();
 
+        // 자식 댓글(답글) 전체 조회 (부모 댓글 리스트 기준)
         List<Comment> children = commentRepository.findByParentInOrderByCreatedAtAsc(parents);
 
+        // 자식 댓글(답글)을 부모 ID 기준으로 그룹화
         Map<Long, List<Comment>> childrenMap = children.stream()
                 .collect(Collectors.groupingBy(comment -> comment.getParent().getId()));
 
+        // 최종 댓글 리스트 구성 (부모 → 자식 순서로 정렬)
         List<CommentResponse> finalCommentList = new ArrayList<>();
         for (Comment parent : parents) {
             finalCommentList.add(CommentResponse.from(parent, parent.getUser(), parent.getTask().getId()));
@@ -87,6 +91,7 @@ public class CommentService {
             replies.forEach(reply -> finalCommentList.add(CommentResponse.from(reply, reply.getUser(), reply.getTask().getId())));
         }
 
+        // 페이징 정보와 함께 CommentPageResponse로 반환
         return new CommentPageResponse(
                 finalCommentList,
                 parentPage.getTotalElements(),
@@ -96,6 +101,7 @@ public class CommentService {
         );
     }
 
+    /// Comment 삭제
     @Transactional
     public void deleteComment(Long taskId, Long commentId, UserDetailsImpl userDetails) {
 
@@ -109,13 +115,8 @@ public class CommentService {
             throw new RuntimeException("해당 Task의 댓글이 아닙니다.");
         }
 
-        int deletedCount = deleteCommentRecursively(comment);
-
-        if (deletedCount > 1) {
-            return;
-        } else  {
-            return;
-        }
+        // 재귀적 댓글 삭제
+        deleteCommentRecursively(comment);
     }
 
     private Comment findCommentById(Long commentId) {
@@ -126,11 +127,11 @@ public class CommentService {
     private int deleteCommentRecursively(Comment comment) {
         List<Comment> children = commentRepository.findByParentId(comment.getId());
 
-        int count = 1;
+        int count = 1; // 현재 댓글 포함
         for (Comment child : children) {
-            count += deleteCommentRecursively(child);
+            count += deleteCommentRecursively(child); // 자식 댓글 재귀 삭제
         }
-        commentRepository.delete(comment);
+        commentRepository.delete(comment); // 현재 댓글 삭제
 
         return count;
     }
