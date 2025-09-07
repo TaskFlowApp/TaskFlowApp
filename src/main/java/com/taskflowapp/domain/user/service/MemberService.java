@@ -69,7 +69,7 @@ public class MemberService {
         );
 
         // 팀에 속해 있지 않은 유저만 조회
-        List<User> users = userRepository.findAllByTeamIsNull();
+        List<User> users = userRepository.findAllByTeamIsNullAndDeletedFalse();
 
         List<MemberResponseDto> availableMembers = users.stream()
                 .filter(user -> user.getTeam() == null || !Objects.equals(user.getTeam().getId(), teamId))
@@ -86,7 +86,7 @@ public class MemberService {
         );
 
         // 팀 아이디를 기준으로 등록되어 있는 유저를 찾아서 출력
-        List<User> users = userRepository.findAllByTeamId(teamId);
+        List<User> users = userRepository.findAllByTeamIdAndDeletedFalse(teamId);
 
         List<MemberResponseDto> members = users.stream()
                 .filter(user -> user.getTeam() != null)
