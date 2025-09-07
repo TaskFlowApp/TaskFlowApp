@@ -95,4 +95,44 @@ public class CommentService {
                 parentPage.getNumber()
         );
     }
+
+    @Transactional
+    public void deleteComment(Long taskId, Long commentId, UserDetailsImpl userDetails) {
+
+        Comment comment = findCommentById(commentId);
+
+        if(!comment.getUser().getId().equals(userDetails.getUserId())) {
+            throw new RuntimeException("댓글 삭제 권한이 없습니다.");
+        }
+
+        if (!comment.getTask().getId().equals(taskId)) {
+            throw new RuntimeException("해당 Task의 댓글이 아닙니다.");
+        }
+
+        int deletedCount = deleteCommentRecursively(comment);
+
+        if (deletedCount > 1) {
+            return;
+        } else  {
+            return;
+        }
+    }
+
+    private Comment findCommentById(Long commentId) {
+        return commentRepository.findById(commentId)
+                .orElseThrow(() -> new EntityNotFoundException("댓글을 찾을 수 없습니다."));
+    }
+
+    private int deleteCommentRecursively(Comment comment) {
+        List<Comment> children = commentRepository.findByParentId(comment.getId());
+
+        int count = 1;
+        for (Comment child : children) {
+            count += deleteCommentRecursively(child);
+        }
+        commentRepository.delete(comment);
+
+        return count;
+    }
+
 }

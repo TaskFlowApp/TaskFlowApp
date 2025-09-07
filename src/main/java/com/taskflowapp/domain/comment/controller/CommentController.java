@@ -61,13 +61,21 @@ public class CommentController {
     }
 
     /**
-     * [ Comment 수정 (프론트 구현 X, 참고용) ]
-     * PUT /api/tasks/{taskId}/comments/{commentId}
-     */
-
-    /**
      * [ Comment 삭제 ]
      * DELETE /api/tasks/{taskId}/comments/{commentId}
      */
+    @DeleteMapping("/comments/{commentId}")
+    public ResponseEntity<ApiResponse<Void>> deleteComment(
+            @PathVariable Long taskId,
+            @PathVariable Long commentId,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
+    ) {
+        commentService.deleteComment(taskId, commentId, userDetails);
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("댓글이 삭제되었습니다."));
+    }
 
+    /**
+     * [ Comment 수정 (프론트 구현 X, 참고용) ]
+     * PUT /api/tasks/{taskId}/comments/{commentId}
+     */
 }
