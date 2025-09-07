@@ -14,6 +14,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -77,7 +78,16 @@ public class CommentService {
         List<Comment> parents = parentPage.getContent();
 
         // 자식 댓글(답글) 전체 조회 (부모 댓글 리스트 기준)
-        List<Comment> children = commentRepository.findByParentInOrderByCreatedAtAsc(parents);
+        List<Comment> children;
+        // pageable 객체에서 createdAt 필드에 대한 정렬 방향을 가져옵니다.
+        Sort.Order order = pageable.getSort().getOrderFor("createdAt");
+
+        // 정렬 방향에 따라 자식 댓글 조회 쿼리 분기 처리
+        if (order != null && order.isAscending()) {
+            children = commentRepository.findChildrenByParentsOrderByCreatedAtAsc(parents);
+        } else {
+            children = commentRepository.findChildrenByParentsOrderByCreatedAtDesc(parents);
+        }
 
         // 자식 댓글(답글)을 부모 ID 기준으로 그룹화
         Map<Long, List<Comment>> childrenMap = children.stream()
@@ -107,7 +117,7 @@ public class CommentService {
 
         Comment comment = findCommentById(commentId);
 
-        if(!comment.getUser().getId().equals(userDetails.getUserId())) {
+        if (!comment.getUser().getId().equals(userDetails.getUserId())) {
             throw new RuntimeException("댓글 삭제 권한이 없습니다.");
         }
 
