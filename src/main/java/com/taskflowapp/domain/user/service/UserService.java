@@ -22,7 +22,7 @@ public class UserService {
     // 현재 사용자 정보 조회
     @Transactional
     public UserResponse findUserInfo(String username) {
-        User user = userRepository.findByUsername(username).orElseThrow(
+        User user = userRepository.findByUsernameAndDeletedFalse(username).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다.")
         );
         return new UserResponse(
