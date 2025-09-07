@@ -161,6 +161,11 @@ public class TeamService {
                 () -> new IllegalArgumentException("팀을 찾을 수 없습니다.")
         );
 
+        // 팀에 속한 멤버들 팀 해제
+        // 해당 팀 소속된 모든 유저의 team 필드 null로 수정
+        team.getMembers().forEach(user -> user.changeTeam(null));
+
+        // 팀 삭제
         teamRepository.delete(team);
 
         return new DeleteTeamResponse("팀이 성공적으로 삭제되었습니다");
