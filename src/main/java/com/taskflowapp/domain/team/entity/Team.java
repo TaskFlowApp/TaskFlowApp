@@ -37,5 +37,10 @@ public class Team extends BaseEntity {
         this.description = description;
     }
 
+    // 팀 수정 메서드 //
+    public void changeTeam(String name, String description) {
+        this.name = name;
+        this.description = description;
+    }
 
 }
