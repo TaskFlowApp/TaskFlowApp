@@ -94,7 +94,7 @@ public class TeamService {
 
         // 1. id 조회
         Team team = teamRepository.findById(teamId).orElseThrow(
-                () -> new IllegalArgumentException("해당하는 팀이 없습니다.")
+                () -> new IllegalArgumentException("팀을 찾을 수 없습니다.")
         );
 
         // 2. dto 변환

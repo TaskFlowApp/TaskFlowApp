@@ -57,10 +57,19 @@ public class TeamController {
     public ResponseEntity<ApiResponse<TeamResponse>> findTeamById(
             @PathVariable Long teamId
     ) {
-        TeamResponse teamResponse = teamService.getTeam(teamId);
+        // 전역 예외 클래스 생성 후 성공 응답 외 삭제 예정
+        // UI상 예외 발생 X -> 보안상 구현
+        try {
+            TeamResponse teamResponse = teamService.getTeam(teamId);
 
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(ApiResponse.success("팀 정보를 조회했습니다.",  teamResponse));
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(ApiResponse.success("팀 정보를 조회했습니다.",  teamResponse));
+
+        } catch (IllegalArgumentException e) {
+            // 팀 없음 에러 처리 //
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(ApiResponse.error(e.getMessage()));
+        }
     }
 
     // 팀 수정 //
@@ -69,10 +78,20 @@ public class TeamController {
             @Valid @RequestBody TeamRequest teamRequest,
             @PathVariable Long teamId
     ) {
-        TeamResponse teamUpdateResponse = teamService.updateTeam(teamRequest, teamId);
+        // 전역 예외 클래스 생성 후 성공 응답 외 삭제 예정
+        // UI상 예외 발생 X -> 보안상 구현
+        try {
+            TeamResponse teamUpdateResponse = teamService.updateTeam(teamRequest, teamId);
 
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(ApiResponse.success("팀 정보가 성공적으로 업데이트되었습니다.", teamUpdateResponse));
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(ApiResponse.success("팀 정보가 성공적으로 업데이트되었습니다.", teamUpdateResponse));
+
+        } catch (IllegalArgumentException e) {
+            // 팀 없음 에러 처리 //
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(ApiResponse.error(e.getMessage()));
+        }
+
     }
 
     // 팀 삭제 //
@@ -80,10 +99,20 @@ public class TeamController {
     public ResponseEntity<ApiResponse<DeleteTeamResponse>> deleteTeam(
             @PathVariable Long teamId
     ) {
-        DeleteTeamResponse deleteTeamResponse = teamService.deleteTeam(teamId);
+        // 전역 예외 클래스 생성 후 성공 응답 외 삭제 예정
+        // UI상 예외 발생 X -> 보안상 구현
+        try {
+            DeleteTeamResponse deleteTeamResponse = teamService.deleteTeam(teamId);
 
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(ApiResponse.success("팀이 성공적으로 삭제되었습니다.", deleteTeamResponse));
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(ApiResponse.success("팀이 성공적으로 삭제되었습니다.", deleteTeamResponse));
+
+        } catch (IllegalArgumentException e) {
+            // 팀 없음 에러 처리 //
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(ApiResponse.error(e.getMessage()));
+        }
+
 
     }
 }
