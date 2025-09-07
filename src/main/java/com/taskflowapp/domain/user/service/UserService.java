@@ -1,13 +1,11 @@
 package com.taskflowapp.domain.user.service;
 
-import com.taskflowapp.domain.security.JwtProvider;
 import com.taskflowapp.domain.user.dto.response.AssigneeResponse;
 import com.taskflowapp.domain.user.dto.response.UserResponse;
 import com.taskflowapp.domain.user.entity.User;
 import com.taskflowapp.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
@@ -20,8 +18,6 @@ import java.util.List;
 public class UserService {
 
     private final UserRepository userRepository;
-    private final JwtProvider jwtProvider;
-    private final PasswordEncoder passwordEncoder;
 
     // 현재 사용자 정보 조회
     @Transactional
