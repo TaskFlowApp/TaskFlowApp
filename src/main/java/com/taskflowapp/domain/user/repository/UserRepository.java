@@ -9,6 +9,8 @@ import java.util.Optional;
 public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByUsernameAndDeletedFalse(String username);
 
+    List<User> findByDeletedFalse();
+
     boolean existsByUsername(String username);
 
     boolean existsByEmail(String email);
@@ -18,4 +20,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     // 팀 아이디를 기준으로 등록되어 있는 유저를 찾아서 출력
     List<User> findAllByTeamId(Long teamId);
+
 }
