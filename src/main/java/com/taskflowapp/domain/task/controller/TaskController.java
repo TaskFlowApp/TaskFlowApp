@@ -6,6 +6,7 @@ import com.taskflowapp.domain.task.dto.TaskCreateRequest;
 import com.taskflowapp.domain.task.dto.TaskResponse;
 import com.taskflowapp.domain.task.dto.TaskStatusUpdateRequest;
 import com.taskflowapp.domain.task.dto.TaskUpdateRequest;
+import com.taskflowapp.domain.task.entity.Status;
 import com.taskflowapp.domain.task.service.TaskService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -30,8 +31,10 @@ public class TaskController {
 
     //작업 목록 조회
     @GetMapping
-    public ResponseEntity<ApiResponse<PageResponse<TaskResponse>>> getTasks(Pageable pageable){
-        PageResponse<TaskResponse> pageResponse = taskService.getTasks(pageable);
+    public ResponseEntity<ApiResponse<PageResponse<TaskResponse>>> getTasks(
+            Pageable pageable,
+            @RequestParam Status status){
+        PageResponse<TaskResponse> pageResponse = taskService.getTasks(pageable, status);
         ApiResponse<PageResponse<TaskResponse>> apiResponse = ApiResponse.success("Task 목록을 조회했습니다.", pageResponse);
         return ResponseEntity.ok(apiResponse);
     }
