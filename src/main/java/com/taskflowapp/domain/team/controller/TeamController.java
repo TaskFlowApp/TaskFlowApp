@@ -25,10 +25,18 @@ public class TeamController {
     public ResponseEntity<ApiResponse<TeamResponse>> createTeam(
             @Valid @RequestBody TeamRequest teamRequest
     ) {
-        TeamResponse createdTeam = teamService.createTeam(teamRequest);
+        // 전역 예외 클래스 생성 후 성공 응답 외 삭제 예정
+        try {
+            TeamResponse createdTeam = teamService.createTeam(teamRequest);
 
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.success("팀이 성공적으로 생성되었습니다.", createdTeam));
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(ApiResponse.success("팀이 성공적으로 생성되었습니다.", createdTeam));
+
+        } catch (IllegalArgumentException e) {
+            // 팀 중복 에러 처리 //
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ApiResponse.error(e.getMessage()));
+        }
     }
 
     // 팀 목록 조회 //

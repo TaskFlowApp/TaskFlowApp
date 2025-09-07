@@ -28,7 +28,7 @@ public class TeamService {
     public TeamResponse createTeam(TeamRequest teamRequest) {
         // 팀 중복 에러
         if (teamRepository.existsByName(teamRequest.getName())) {
-            throw new IllegalArgumentException("이미 존재하는 팀 이름입니다.");
+            throw new IllegalArgumentException("팀 이름이 이미 존재합니다.");
         }
 
         Team team = Team.builder()
