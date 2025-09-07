@@ -32,7 +32,9 @@ public class WebConfig implements WebMvcConfigurer {
     }
 }
 ```
+
 ---
+
 ## 역할
 
 - JWT 발급 및 검증 전 단계에서 웹 MVC 설정(WebMvcConfigurer) 중 CORS 등 웹 관련 설정 담당
@@ -43,10 +45,14 @@ public class WebConfig implements WebMvcConfigurer {
     - CORS는 위 제한을 서버가 허용해주는 메커니즘으로, 다른 도메인(예: localhost:3000)에서 보낸 요청의 허용 여부를 결정하는 규칙
     - 요청 종류:
       - Simple Request – 간단한 요청:
-        - GET, POST
+        - 요청 조건:
+          - GET, HEAD, POST(text/plain, application/x-www-form-urlencoded, multipart/form-data 세 가지만)
+          - 다른 출처, 같은 출처 여부 무관
         - 서버가 바로 응답 가능 즉 Pre-flight 없음
       - Pre-flight Request – 사전 요청:
-        - PUT, DELETE, PATCH, POST, 커스텀 헤더
+        - 요청 조건:
+          - PUT, DELETE, PATCH, POST(위 세 가지 조건 외 Content-Type. 예: application/json), 커스텀 헤더
+          - 다른 출처 요청
         - 웹 브라우저가 본 요청을 보내기 전에 먼저 서버에 OPTIONS 요청을 보내서 해당 메서드 또는 헤더 허용 여부 확인
         - 서버가 허용 시, 웹 브라우저가 실제 요청 수행
         - 매번 송신 시 성능에 부담이므로, 서버가 응답 헤더에 캐시 시간을 설정하여 웹 브라우저가 같은 조건의 요청 반복 시 Pre-flight 재사용
@@ -55,3 +61,11 @@ public class WebConfig implements WebMvcConfigurer {
 
 - 백엔드(예: localhost:8080)와 프론트엔드(예: localhost:3000) 서버를 서로 다른 주소에서 실행 시, 웹 브라우저는 보안상의 이유로 요청 차단
 - WebConfig를 통해 localhost:3000에서 오는 요청을 허용하는 것으로 설정 및 위 문제 해결
+
+## 흐름
+1. 웹 브라우저가 다른 출처(origin)에서 요청
+2. Pre-flight 조건인지 판단
+   - Simple Request: 서버에 바로 요청
+   - Pre-flight Request: 브라우저가 먼저 OPTIONS 요청 -> 서버가 허용하면 실제 요청
+3. WebConfig의 addCorsMappings가 CORS 규칙에 따라 요청 허용 또는 차단
+4. 웹 브라우저가 요청 수행
