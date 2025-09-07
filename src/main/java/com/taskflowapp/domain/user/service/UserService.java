@@ -35,10 +35,10 @@ public class UserService {
         );
     }
 
-    // 새 작업(Task) 등록시 담당자 조희
+    // 새 작업(Task) 등록시 담당자 조회
     @Transactional
     public List<AssigneeResponse> findAllUser() {
-        List<User> users = userRepository.findAll();
+        List<User> users = userRepository.findByDeletedFalse();
         List<AssigneeResponse> responseList = new ArrayList<>();
 
         for (User user : users) {
