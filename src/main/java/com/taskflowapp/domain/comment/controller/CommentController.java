@@ -47,13 +47,13 @@ public class CommentController {
             @PathVariable Long taskId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "newest") String sortOrder
+            @RequestParam(defaultValue = "newest") String sort
     ) {
-        Sort sort = sortOrder.equals("oldest")
+        Sort sortOrder = sort.equals("oldest")
                 ? Sort.by(Sort.Order.asc("createdAt"))          //  조건 참일때, 오래된 댓글부터
                 : Sort.by(Sort.Order.desc("createdAt"));        // 조건 거짓일 때, 최신 댓글부터
 
-        Pageable pageable = PageRequest.of(page, size, sort);
+        Pageable pageable = PageRequest.of(page, size, sortOrder);
 
         CommentPageResponse response = commentService.getAllComments(taskId, pageable);
 
