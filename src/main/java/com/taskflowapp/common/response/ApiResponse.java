@@ -11,6 +11,8 @@ import java.time.Instant;
 public class ApiResponse<T> {
     private final boolean success;
     private final String message;
+    // 데이터는 null 허용
+    @JsonInclude(JsonInclude.Include.ALWAYS)
     private final T data;
     private final Instant timestamp;        // LocalDateTimeAndInstant.md 참고
 
