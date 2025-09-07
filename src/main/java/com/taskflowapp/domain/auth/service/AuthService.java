@@ -69,7 +69,7 @@ public class AuthService {
     // 로그인
     @Transactional(readOnly = true)
     public AuthLoginResponse login(AuthLoginRequest request) {
-        User user = userRepository.findByUsername(request.getUsername()).orElseThrow(
+        User user = userRepository.findByUsernameAndDeletedFalse(request.getUsername()).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "잘못된 아이디 또는 비밀번호입니다.")    // 명세서상 메세지 내용: "잘못된 사용자명 또는 비밀번호입니다."
         );
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
@@ -86,7 +86,7 @@ public class AuthService {
     // 회원탈퇴
     @Transactional
     public void withdraw(String username, AuthWithdrawRequest request) {
-        User user = userRepository.findByUsername(username).orElseThrow(
+        User user = userRepository.findByUsernameAndDeletedFalse(username).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND)
         );
 
@@ -94,6 +94,6 @@ public class AuthService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다.");    // 비밀번호 불일치면 Unauthorized가 적합한듯 하지만 명세서상 Bad Request
         }
 
-        userRepository.delete(user);
+        user.softDelete();
     }
 }

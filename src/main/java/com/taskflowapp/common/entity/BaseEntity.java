@@ -1,5 +1,6 @@
 package com.taskflowapp.common.entity;
 
+import com.taskflowapp.common.SoftDelete;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -12,7 +13,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Getter
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
-public abstract class BaseEntity {
+public abstract class BaseEntity extends SoftDelete {
 
     @CreatedDate
     @Column(updatable = false)

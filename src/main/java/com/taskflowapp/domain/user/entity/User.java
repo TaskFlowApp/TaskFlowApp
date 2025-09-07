@@ -56,4 +56,10 @@ public class User extends BaseEntity {
     public void changeTeam(Team team) {
         this.team = team;
     }
+
+    @Override
+    public void softDelete() {
+        super.softDelete();    // 부모 Soft Delete 메서드의 deleted = true 처리 실행
+        this.team = null;      // 연관관계 끊기
+    }
 }
