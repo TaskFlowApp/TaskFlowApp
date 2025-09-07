@@ -42,15 +42,9 @@ public class MemberService {
             }
         }
 
-        // 불필요한 코드이지만 혹시 몰라서 주석처리 했음.
-//        // 이미 해당 팀에 멤버(유저)가 추가되어 있다면 (멤버 중복 방지)
-//        if (user.getTeam() != null && Objects.equals(user.getTeam().getId(), team.getId())) {
-//            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "이미 추가된 유저입니다.");
-//        }
-
-        // 연관관계 설정
+        // 유저에 팀 아이디 추가
         user.changeTeam(team);            // 주인 쪽 설정
-        team.getMembers().add(user);   // 양방향 동기화
+        team.getMembers().add(user);      // 양방향 동기화
         userRepository.save(user); // 주인만 저장하면 된다.
 
         // 응답 Dto 구성
@@ -73,7 +67,10 @@ public class MemberService {
         teamRepository.findById(teamId).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "팀을 찾을 수 없습니다")
         );
-        List<User> users = userRepository.findAll();
+
+        // 팀에 속해 있지 않은 유저만 조회
+        List<User> users = userRepository.findAllByTeamIsNull();
+
         List<MemberResponseDto> availableMembers = users.stream()
                 .filter(user -> user.getTeam() == null || !Objects.equals(user.getTeam().getId(), teamId))
                 .map(MemberResponseDto::from)
@@ -87,7 +84,10 @@ public class MemberService {
         teamRepository.findById(teamId).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "팀을 찾을 수 없습니다")
         );
-        List<User> users = userRepository.findAll();
+
+        // 팀 아이디를 기준으로 등록되어 있는 유저를 찾아서 출력
+        List<User> users = userRepository.findAllByTeamId(teamId);
+
         List<MemberResponseDto> members = users.stream()
                 .filter(user -> user.getTeam() != null)
                 .map(MemberResponseDto::from)
@@ -104,11 +104,6 @@ public class MemberService {
                 () -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "사용자가 팀 멤버가 아닙니다")
         );
 
-        // 그 어떠한 팀에도 속하지 않은 유저이거나 해당 유저가 현재 선택한 팀에 포함된 유저가 아닐 경우
-        if (user.getTeam() == null || !Objects.equals(user.getTeam().getId(), team.getId())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "사용자를 찾을 수 없습니다.");
-        }
-
         // 로그인한 유저가 관리자일 때 관리자는 모든 유저를 관리할 수 있지만 일반사용자는 본인의 상태(팀)만 변경할 수 있다.
         if (!Objects.equals(userDetails.getAuthUser().getRole(), UserRole.ADMIN)) {
             if (!Objects.equals(userDetails.getAuthUser().getId(), user.getId())) {
@@ -116,7 +111,7 @@ public class MemberService {
             }
         }
 
-        // 연관관계 제거
+        // 유저의 팀 아이디 제거
         team.getMembers().remove(user);
         user.changeTeam(null);
         userRepository.save(user); // 주인 쪽 저장
