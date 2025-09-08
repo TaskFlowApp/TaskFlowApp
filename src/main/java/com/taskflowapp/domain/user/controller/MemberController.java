@@ -31,10 +31,10 @@ public class MemberController {
     }
 
     @GetMapping("/members") // task가 먼저 만들어져야만 이것을 테스트할 수 있다.. 그래서 아직 테스트하지 못함.
-    public ResponseEntity<ApiResponse<List<MemberResponseDto>>> getMembers(
+    public ResponseEntity<ApiResponse<List<MemberResponseDto>>> findTeamMembers(
             @PathVariable Long teamId
     ) {
-        List<MemberResponseDto> memberResponse = memberService.findTeamMember(teamId);
+        List<MemberResponseDto> memberResponse = memberService.findTeamMembers(teamId);
 
         return ResponseEntity.ok(ApiResponse.success("팀 멤버 목록을 조회했습니다.", memberResponse));
     }
