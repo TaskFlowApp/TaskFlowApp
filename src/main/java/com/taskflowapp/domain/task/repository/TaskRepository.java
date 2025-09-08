@@ -13,7 +13,7 @@ import java.util.Optional;
     public interface TaskRepository extends JpaRepository<Task, Long> {
 
         // 상태별 페이지 조회
-        Page<Task> findByStatusAndDeletedFalse(Status status, Pageable pageable);
+        Page<Task> findAllByStatusAndDeletedFalse(Status status, Pageable pageable);
 
         Optional<Task> findByIdAndDeletedFalse(Long taskId);
 
@@ -70,4 +70,10 @@ import java.util.Optional;
        or lower(task.description) like lower(concat('%', :q, '%')) )
 """)
         Page<Task> searchTasksTop(String q, Pageable pageable); // 전역 검색 상위 N용 (size=5)
-}
+
+        Page<Task> findAllByAssigneeIdAndStatusAndDeletedFalse(Long assigneeId, Status status, Pageable pageable);
+
+        Page<Task> findAllByAssigneeIdAndDeletedFalse(Long assigneeId, Pageable pageable);
+
+        Page<Task> findAllByDeletedFalse(Pageable pageable);
+    }
