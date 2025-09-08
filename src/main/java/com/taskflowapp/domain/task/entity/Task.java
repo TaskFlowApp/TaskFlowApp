@@ -4,12 +4,15 @@ import com.taskflowapp.common.entity.BaseEntity;
 import com.taskflowapp.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.Where;
+
 import java.time.LocalDateTime;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "tasks")
+@Where(clause = "deleted = false")
 public class Task extends BaseEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -49,4 +52,10 @@ public class Task extends BaseEntity {
         this.title= title; this.description = description; this.dueDate=dueDate; this.priority=priority; this.status=status;}
 
     public void updateTaskStatus(Status status){this.status=status;}
+
+    @Override
+    public void softDelete() {
+        super.softDelete();
+        this.assignee = null;
+    }
 }

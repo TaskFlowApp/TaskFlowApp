@@ -156,6 +156,9 @@ public class TaskService {
 
     @Transactional
     public void deleteTask(Long taskId){
-        taskRepository.deleteById(taskId);
+        Task task = taskRepository.findById(taskId).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND,"존재하지 않는 Task입니다.")
+        );
+        task.softDelete();
     }
 }
