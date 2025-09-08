@@ -20,7 +20,7 @@ public class UserService {
     private final UserRepository userRepository;
 
     // 현재 사용자 정보 조회
-    @Transactional
+    @Transactional(readOnly = true)
     public UserResponse findUserInfo(String username) {
         User user = userRepository.findByUsernameAndDeletedFalse(username).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다.")
@@ -36,7 +36,7 @@ public class UserService {
     }
 
     // 새 작업(Task) 등록시 담당자 조회
-    @Transactional
+    @Transactional(readOnly = true)
     public List<AssigneeResponse> findAllUser() {
         List<User> users = userRepository.findAllByDeletedFalse();
         List<AssigneeResponse> responseList = new ArrayList<>();
