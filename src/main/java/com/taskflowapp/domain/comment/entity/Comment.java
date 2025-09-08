@@ -1,8 +1,11 @@
 package com.taskflowapp.domain.comment.entity;
 
 import com.taskflowapp.common.entity.BaseEntity;
+import com.taskflowapp.domain.task.entity.Task;
+import com.taskflowapp.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -16,25 +19,26 @@ public class Comment extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // 연관관계 설정 후 변경 예정
-    @Column(nullable = false)
-    private Long userId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
-    // 연관관계 설정 후 변경 예정
-    @Column(nullable = false)
-    private Long taskId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "task_id", nullable = false)
+    private Task task;
 
-    // 연관관계 설정 후 변경 예정
-    @Column(nullable = false)
-    private Long parentId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_id", nullable = true) // null 허용
+    private Comment parent;
 
     @Column(nullable = false, length = 100)
     private String content;
 
-    public Comment(Long userId, Long taskId, Long parentId, String content) {
-        this.userId = userId;
-        this.taskId = taskId;
-        this.parentId = parentId;
+    @Builder
+    public Comment(User user, Task task, Comment parent, String content) {
+        this.user = user;
+        this.task = task;
+        this.parent = parent;
         this.content = content;
     }
 }
