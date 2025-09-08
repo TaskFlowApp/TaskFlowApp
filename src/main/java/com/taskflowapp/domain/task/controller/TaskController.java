@@ -2,6 +2,7 @@ package com.taskflowapp.domain.task.controller;
 
 import com.taskflowapp.common.response.ApiResponse;
 import com.taskflowapp.common.response.PageResponse;
+import com.taskflowapp.domain.search.service.SearchService;
 import com.taskflowapp.domain.task.dto.TaskCreateRequest;
 import com.taskflowapp.domain.task.dto.TaskResponse;
 import com.taskflowapp.domain.task.dto.TaskStatusUpdateRequest;
@@ -19,6 +20,8 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/tasks")
 public class TaskController {
     private final TaskService taskService;
+    private final SearchService searchService;      // 작업 검색 페이징을 위해서 넣음
+
     //작업 생성
     @PostMapping
     public ResponseEntity<ApiResponse<TaskResponse>> saveTask(
@@ -77,5 +80,20 @@ public class TaskController {
         taskService.deleteTask(taskId);
         ApiResponse<Void> response = ApiResponse.success("Task가 삭제되었습니다.");
         return ResponseEntity.ok(response);
+    }
+
+    /**
+     * 작업 검색 (페이징)
+     * 엔드포인트 : GET /api/tasks/search?q={query}&page=0&size=10
+     */
+    // todo `/api/tasks/search` 경로를 유지하기 위해 TaskController 에 둘지 확인
+    @GetMapping("/search")
+    public ResponseEntity<ApiResponse<PageResponse<TaskResponse>>> searchTasks(
+            @RequestParam("q") String q,                                // q : 검색어(필수)
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size
+    ) {
+        PageResponse<TaskResponse> data = searchService.searchTasks(q, page, size);
+        return ResponseEntity.ok(ApiResponse.success("작업 검색 완료", data));
     }
 }

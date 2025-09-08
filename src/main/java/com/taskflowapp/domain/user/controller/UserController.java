@@ -41,7 +41,7 @@ public class UserController {
     public ResponseEntity<ApiResponse<List<MemberResponseDto>>> findAvailableUsers(
             @RequestParam Long teamId
     ) {
-        return ResponseEntity.ok(ApiResponse.success("사용 가능한 사용자 목록을 조회했습니다.", memberService.findAllAvailableUsers(teamId)));
+        return ResponseEntity.ok(ApiResponse.success("사용 가능한 사용자 목록을 조회했습니다.", memberService.findAvailableUsers(teamId)));
     }
 
     // 새 작업(Task) 등록시 담당자 조희

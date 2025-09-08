@@ -29,6 +29,7 @@ public class PageResponse<T> {
     }
 
     ///  튜터님 코드
+    /// PageResponse.of(Page<T>) 팩토리
     public static <T> PageResponse<T> of(Page<T> page) {
         return new PageResponse<>(
                 page.getContent(),      // 원본, 메타데이터는 page에서 그대로 사용
