@@ -29,6 +29,18 @@ public class Team extends BaseEntity {
     @OneToMany(mappedBy = "team")
     private List<User> members; // 멤버의 리스트를 참조하기 위해
 
+    // 양방향 연관관계 동기화 멤버 추가
+    public void addMember(User user) {
+        members.add(user);
+        user.changeTeam(this);
+    }
+
+    // 양방향 연관관계 동기화 멤버 제거
+    public void removeMember(User user) {
+        members.remove(user);
+        user.changeTeam(null);
+    }
+
     public Team (
             String name,
             String description
@@ -42,5 +54,4 @@ public class Team extends BaseEntity {
         this.name = name;
         this.description = description;
     }
-
 }
