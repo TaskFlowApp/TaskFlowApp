@@ -47,14 +47,14 @@ public class CommentService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("해당 사용자를 찾을 수 없습니다."));
 
-        // Parent Comment 조회 (답글 체크)
+        // Parent Comment 조회 (대댓글 체크)
         Comment parent = null;
         if (request.getParentId() != null) {
             parent = commentRepository.findById(request.getParentId())
                     .orElseThrow(() -> new EntityNotFoundException("해당 댓글을 찾을 수 없습니다."));
         }
 
-        // 댓글 생성
+        // 댓글 엔티티 생성 및 저장
         Comment comment = Comment.builder()
                 .user(user)
                 .task(task)
@@ -63,7 +63,7 @@ public class CommentService {
                 .build();
         Comment createdComment = commentRepository.save(comment);
 
-        // 정적 팩토리 메서드 사용
+        // CommentResponse 반환
         return CommentResponse.from(createdComment, user, taskId);
     }
 
@@ -73,30 +73,30 @@ public class CommentService {
         // Task 존재 여부 확인 (실제 조회 결과는 사용하지 않음)
         taskRepository.findById(taskId);
 
-        // 부모 댓글 페이징 조회
-        Page<Comment> parentPage = commentRepository.findByTaskIdAndParentIsNull(taskId, pageable);
+        // 부모 댓글 페이징 조회(패치 조인)
+        Page<Comment> parentPage = commentRepository.findParentCommentsWithUserAndTask(taskId, pageable);
         List<Comment> parents = parentPage.getContent();
 
-        // 자식 댓글(답글) 전체 조회 (부모 댓글 리스트 기준)
+        // 자식 댓글(대댓글) 전체 조회 (부모 댓글 리스트 기준)
         List<Comment> children;
         // pageable 객체에서 createdAt 필드에 대한 정렬 방향을 가져옵니다.
         Sort.Order order = pageable.getSort().getOrderFor("createdAt");
 
-        // 정렬 방향에 따라 자식 댓글 조회 쿼리 분기 처리
+        // 정렬 기준에 따라 분기, 자식 댓글(대댓글) 전체 조회
         if (order != null && order.isAscending()) {
-            children = commentRepository.findChildrenByParentsOrderByCreatedAtAsc(parents);
+            children = commentRepository.findChildrenWithUserAndTaskAsc(parents);
         } else {
-            children = commentRepository.findChildrenByParentsOrderByCreatedAtDesc(parents);
+            children = commentRepository.findChildrenWithUserAndTaskDesc(parents);
         }
 
-        // 자식 댓글(답글)을 부모 ID 기준으로 그룹화
+        // 자식 댓글(대댓글)을 부모 ID 기준으로 그룹화
         Map<Long, List<Comment>> childrenMap = children.stream()
-                .collect(Collectors.groupingBy(comment -> comment.getParent().getId()));
+                .collect(Collectors.groupingBy(comment -> comment.getParent().getId())); // N+1 문제 발생 -> 패치 조인으로 해결
 
-        // 최종 댓글 리스트 구성 (부모 → 자식 순서로 정렬)
+        // 댓글 리스트 구성 (부모 → 자식 순서로 정렬)
         List<CommentResponse> finalCommentList = new ArrayList<>();
         for (Comment parent : parents) {
-            finalCommentList.add(CommentResponse.from(parent, parent.getUser(), parent.getTask().getId()));
+            finalCommentList.add(CommentResponse.from(parent, parent.getUser(), parent.getTask().getId())); // N+1 문제 발생 -> 패치 조인으로 해결
             List<Comment> replies = childrenMap.getOrDefault(parent.getId(), List.of());
             replies.forEach(reply -> finalCommentList.add(CommentResponse.from(reply, reply.getUser(), reply.getTask().getId())));
         }
@@ -113,20 +113,27 @@ public class CommentService {
 
     /// Comment 삭제
     @Transactional
-    public void deleteComment(Long taskId, Long commentId, UserDetailsImpl userDetails) {
-
+    public String deleteComment(Long taskId, Long commentId, UserDetailsImpl userDetails) {
+        // 댓글 조회
         Comment comment = findCommentById(commentId);
 
+        // 작성자 본인 확인
         if (!comment.getUser().getId().equals(userDetails.getUserId())) {
             throw new RuntimeException("댓글 삭제 권한이 없습니다.");
         }
 
+        // 해당 Task에 댓글이 속하는지 확인
         if (!comment.getTask().getId().equals(taskId)) {
             throw new RuntimeException("해당 Task의 댓글이 아닙니다.");
         }
 
-        // 재귀적 댓글 삭제
-        deleteCommentRecursively(comment);
+        // 재귀적 댓글, 답글 삭제
+        int deletedCount = deleteCommentRecursively(comment);
+
+        // 삭제된 댓글 수에 따라 메시지 분기
+        return deletedCount > 1
+                ? "댓글과 대댓글들이 삭제되었습니다."
+                : "댓글이 삭제되었습니다.";
     }
 
     private Comment findCommentById(Long commentId) {
@@ -139,11 +146,11 @@ public class CommentService {
 
         int count = 1; // 현재 댓글 포함
         for (Comment child : children) {
-            count += deleteCommentRecursively(child); // 자식 댓글 재귀 삭제
+            count += deleteCommentRecursively(child); // 자식 댓글(대댓글) 재귀 삭제
         }
+
         commentRepository.delete(comment); // 현재 댓글 삭제
 
         return count;
     }
-
 }
