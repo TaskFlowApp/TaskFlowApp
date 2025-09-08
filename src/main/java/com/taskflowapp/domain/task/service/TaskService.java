@@ -61,7 +61,7 @@ public class TaskService {
     //작업 목록 조회
     @Transactional(readOnly = true)
     public PageResponse<TaskResponse> getTasks(Pageable pageable, Status status){
-        Page<Task> page = taskRepository.findByStatus(status, PageRequest.of(pageable.getPageNumber(), pageable.getPageSize()));
+        Page<Task> page = taskRepository.findByStatusAndDeletedFalse(status, PageRequest.of(pageable.getPageNumber(), pageable.getPageSize()));
         Page<TaskResponse> mappedPage = page.map(task -> new TaskResponse(
                 task.getId(),
                 task.getTitle(),
@@ -84,7 +84,7 @@ public class TaskService {
     //작업 상세 조회
     @Transactional
     public TaskResponse getTask(Long taskId){
-        Task task = taskRepository.findById(taskId).orElseThrow(
+        Task task = taskRepository.findByIdAndDeletedFalse(taskId).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND,"존재하지 않는 Task입니다.")
         );
         return new TaskResponse(
@@ -107,7 +107,7 @@ public class TaskService {
     //작업 수정 기능
     @Transactional
     public TaskResponse updateTask(TaskUpdateRequest request, Long taskId){
-        Task task = taskRepository.findById(taskId).orElseThrow(
+        Task task = taskRepository.findByIdAndDeletedFalse(taskId).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND,"존재하지 않는 작업입니다.")
         );
         task.updateTask(request.getTitle(),request.getDescription(),request.getDueDate(),request.getPriority(),request.getStatus());
@@ -132,7 +132,7 @@ public class TaskService {
     //작업 상태 업데이트
     @Transactional
     public TaskResponse updateTaskStatus(TaskStatusUpdateRequest request, Long taskId){
-        Task task = taskRepository.findById(taskId).orElseThrow(
+        Task task = taskRepository.findByIdAndDeletedFalse(taskId).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND,"존재하지 않는 Task입니다.")
         );
         task.updateTaskStatus(request.getStatus());
@@ -156,7 +156,7 @@ public class TaskService {
 
     @Transactional
     public void deleteTask(Long taskId){
-        Task task = taskRepository.findById(taskId).orElseThrow(
+        Task task = taskRepository.findByIdAndDeletedFalse(taskId).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND,"존재하지 않는 Task입니다.")
         );
         task.softDelete();
