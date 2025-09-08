@@ -36,8 +36,9 @@ public class TaskController {
     @GetMapping
     public ResponseEntity<ApiResponse<PageResponse<TaskResponse>>> getTasks(
             Pageable pageable,
-            @RequestParam Status status){
-        PageResponse<TaskResponse> pageResponse = taskService.getTasks(pageable, status);
+            @RequestParam(required = false) Status status,
+            @RequestParam(required = false) Long assigneeId){
+        PageResponse<TaskResponse> pageResponse = taskService.getTasks(pageable, status, assigneeId);
         ApiResponse<PageResponse<TaskResponse>> apiResponse = ApiResponse.success("Task 목록을 조회했습니다.", pageResponse);
         return ResponseEntity.ok(apiResponse);
     }
