@@ -6,13 +6,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-
 import java.time.LocalDateTime;
 import java.util.List;
-
 import java.util.Optional;
-
-
 
     public interface TaskRepository extends JpaRepository<Task, Long> {
 
@@ -21,13 +17,8 @@ import java.util.Optional;
 
         Optional<Task> findByIdAndDeletedFalse(Long taskId);
 
-        @Query("""
-    select task from Task task
-    where task.deleted = false
-    and ( lower(task.title) like lower(concat('%', :q, '%'))
-       or lower(task.description) like lower(concat('%', :q, '%')) )
-""")
-        Page<Task> searchTasksTop(String q, Pageable pageable); // 전역 검색 상위 N용 (size=5)
+        // 상태별 페이지 조회
+        Page<Task> findByStatus(Status status, Pageable pageable);
 
         /** ===== 대시보드 ===== */
         /** --- 대시보드 통계용 카운트 메서드 --- */
@@ -71,4 +62,12 @@ import java.util.Optional;
          * 전역 검색 상단에 보여줄 상위 N개 (size=5)
          * Pageable.of(0, N)으로 개수를 제어합니다.
          */
+
+        @Query("""
+    select task from Task task
+    where task.deleted = false
+    and ( lower(task.title) like lower(concat('%', :q, '%'))
+       or lower(task.description) like lower(concat('%', :q, '%')) )
+""")
+        Page<Task> searchTasksTop(String q, Pageable pageable); // 전역 검색 상위 N용 (size=5)
 }

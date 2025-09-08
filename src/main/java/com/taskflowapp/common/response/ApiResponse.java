@@ -26,7 +26,8 @@ public class ApiResponse<T> {
         this.timestamp = Instant.now();
     }
 
-    ///  튜터님 코드 정적 메서드 - 의도성이 명확
+    /// 튜터님 코드 정적 메서드 - 의도성이 명확
+    /// ApiResponse.success("메시지", data)
     public static <T> ApiResponse<T> success(String message, T data) {
         return new ApiResponse<>(true, message, data);
     }
