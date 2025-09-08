@@ -44,7 +44,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("SELECT u " +
             "FROM User u " +
             "WHERE u.team.id = :teamID AND u.deleted = false")
-    List<User> findAllByTeamId( Long teamId);
+    List<User> findAllByTeamId(@Param("teamId") Long teamId);
     */
-    List<User> findAllByTeamIdAndDeletedFalse(@Param("teamId") Long teamId);
+    List<User> findAllByTeamIdAndDeletedFalse(Long teamId);
 }
