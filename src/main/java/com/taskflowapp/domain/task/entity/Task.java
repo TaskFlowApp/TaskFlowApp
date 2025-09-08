@@ -4,7 +4,6 @@ import com.taskflowapp.common.entity.BaseEntity;
 import com.taskflowapp.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.Where;
 
 import java.time.LocalDateTime;
 

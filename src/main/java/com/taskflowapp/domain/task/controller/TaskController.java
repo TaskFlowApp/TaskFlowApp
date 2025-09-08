@@ -75,7 +75,7 @@ public class TaskController {
             @PathVariable Long taskId
     ){
         taskService.deleteTask(taskId);
-        ApiResponse response = ApiResponse.success("Task가 삭제되었습니다.");
+        ApiResponse<Void> response = ApiResponse.success("Task가 삭제되었습니다.");
         return ResponseEntity.ok(response);
     }
 }
