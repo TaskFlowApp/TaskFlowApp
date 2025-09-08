@@ -14,7 +14,7 @@ public class WebConfig implements WebMvcConfigurer {
 
     // CORS 설정 추가 메서드
     @Override
-    public void addCorsMappings(CorsRegistry registry) {
+    public void addCorsMappings(CorsRegistry registry) { 
         // 모든 URL 경로("/**")에 대해 CORS를 적용하겠다는 의미
         registry.addMapping("/**")
                 // 허용할 도메인 설정. 
@@ -70,3 +70,16 @@ public class WebConfig implements WebMvcConfigurer {
     - Pre-flight Request: 브라우저가 먼저 OPTIONS 요청 -> 서버가 허용하면 실제 요청
 3. WebConfig의 addCorsMappings가 CORS 규칙에 따라 요청 허용 또는 차단
 4. 웹 브라우저가 요청 수행
+
+## `public void addCorsMappings(CorsRegistry registry)`
+
+- WebMvcConfigurer 인터페이스에서 제공하는 메서드 시그니처
+- 오버라이드 시 Spring MVC가 해당 설정을 읽어 CorsRegistry -> CorsConfiguration으로 변환 및 저장 -> 외부에서 사용할 수 있도록 CorsConfigurationSource 인터페이스 형태로 노출
+- 자동 CorsConfigurationSource 빈 생성 요건:
+  - @Configuration 클래스가 존재
+  - WebMvcConfigurer 구현
+  - addCorsMappings 오버라이드
+- 위 세 가지 만족 시, Spring Security가 http.cors(Customizer.withDefaults())를 호출 시 
+  1. Spring Security는 CorsFilter 등록 
+  2. CorsFilter는 요청이 들어올 때 마다 CorsConfigurationSource에서 CORS 정책을 꺼내와 확인
+  - 즉 Spring MVC가 만든 CORS 정책을 Security도 꺼내 쓸 수 있게 연결 고리 제공
