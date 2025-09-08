@@ -38,7 +38,7 @@ public class UserService {
     // 새 작업(Task) 등록시 담당자 조회
     @Transactional
     public List<AssigneeResponse> findAllUser() {
-        List<User> users = userRepository.findByDeletedFalse();
+        List<User> users = userRepository.findAllByDeletedFalse();
         List<AssigneeResponse> responseList = new ArrayList<>();
 
         for (User user : users) {
