@@ -21,4 +21,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     // 팀 아이디를 기준으로 등록되어 있는 유저를 찾아서 출력
     List<User> findAllByTeamIdAndDeletedFalse(Long teamId);
 
+    //유저 아이디로 유저 조회 시 삭제되지 않은 유저만 조회
+    Optional<User> findByIdAndDeletedFalse(Long userId);
+
 }

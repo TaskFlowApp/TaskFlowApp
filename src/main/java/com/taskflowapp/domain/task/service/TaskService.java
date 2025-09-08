@@ -29,7 +29,7 @@ public class TaskService {
     //작업 생성
     @Transactional
     public TaskResponse createTask(TaskCreateRequest request){
-        User assignee = userRepository.findById(request.assigneeId).orElseThrow(
+        User assignee = userRepository.findByIdAndDeletedFalse(request.assigneeId).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND,"존재하지 않는 유저 ID입니다.")
         );
         Task task = Task.builder()
