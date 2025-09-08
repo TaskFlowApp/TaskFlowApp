@@ -51,9 +51,9 @@ public class Task extends BaseEntity {
 
     public void updateTaskStatus(Status status){this.status=status;}
 
-    @Override
-    public void softDelete() {
-        super.softDelete();
-        this.assignee = null;
-    }
+//    @Override
+//    public void softDelete() {
+//        super.softDelete();
+//        this.assignee = null;
+//    }
 }
