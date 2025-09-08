@@ -7,7 +7,6 @@ import com.taskflowapp.domain.team.dto.TeamResponse;
 import com.taskflowapp.domain.team.entity.Team;
 import com.taskflowapp.domain.team.repository.TeamRepository;
 import com.taskflowapp.domain.user.dto.response.MemberResponseDto;
-import com.taskflowapp.domain.user.entity.User;
 import com.taskflowapp.domain.user.enums.UserRole;
 import com.taskflowapp.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +14,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -92,7 +90,6 @@ public class TeamService {
                         .build()
                 )
                 .collect(Collectors.toList());
-
         return teamResponses;
     }
 
@@ -144,6 +141,11 @@ public class TeamService {
                 () -> new IllegalArgumentException("팀을 찾을 수 없습니다.")
         );
 
+        // 팀 중복 에러
+        if (teamRepository.existsByName(teamRequest.getName())) {
+            throw new IllegalArgumentException("팀 이름이 이미 존재합니다.");
+        }
+
         team.changeTeam(
                 teamRequest.getName(),
                 teamRequest.getDescription()
@@ -179,6 +181,7 @@ public class TeamService {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "팀 삭제는 관리자만 가능합니다.");
         }
 
+        // 팀 없음 에러
         Team team = teamRepository.findById(teamId).orElseThrow(
                 () -> new IllegalArgumentException("팀을 찾을 수 없습니다.")
         );

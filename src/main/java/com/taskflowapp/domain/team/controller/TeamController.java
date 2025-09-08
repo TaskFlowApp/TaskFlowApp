@@ -8,14 +8,11 @@ import com.taskflowapp.domain.team.dto.TeamResponse;
 import com.taskflowapp.domain.team.service.TeamService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
-
 import java.util.List;
 
 @RestController
@@ -37,12 +34,12 @@ public class TeamController {
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(ApiResponse.success("팀이 성공적으로 생성되었습니다.", createdTeam));
 
-        // 팀 중복 에러 처리 //
+        // 팀 중복 에러 처리
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(ApiResponse.error(e.getMessage()));
 
-        // 관리자 아닐 경우 에러 처리 //
+        // 관리자 아닐 경우 에러 처리
         } catch (ResponseStatusException e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                     .body(ApiResponse.error(e.getMessage()));
@@ -68,15 +65,14 @@ public class TeamController {
             @PathVariable Long teamId
     ) {
         // 전역 예외 클래스 생성 후 성공 응답 외 삭제 예정
-        // UI상 예외 발생 X -> 보안상 구현
         try {
             TeamResponse teamResponse = teamService.getTeam(teamId);
 
             return ResponseEntity.status(HttpStatus.OK)
                     .body(ApiResponse.success("팀 정보를 조회했습니다.",  teamResponse));
 
+        // 팀 없음 에러 처리 -> UI상 예외 발생 X => 보안상 구현
         } catch (IllegalArgumentException e) {
-            // 팀 없음 에러 처리 //
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(ApiResponse.error(e.getMessage()));
         }
@@ -96,15 +92,13 @@ public class TeamController {
             return ResponseEntity.status(HttpStatus.OK)
                     .body(ApiResponse.success("팀 정보가 성공적으로 업데이트되었습니다.", teamUpdateResponse));
 
-        // 팀 없음 에러 처리 // UI상 예외 발생 X -> 보안상 구현
+        // 팀 없음, 팀 중복 에러 처리 -> UI상 예외 발생 X => 보안상 구현
         } catch (IllegalArgumentException e) {
-
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(ApiResponse.error(e.getMessage()));
 
-        // 관리자 아닐 경우 에러 처리 //
+        // 관리자 아닐 경우 에러 처리
         } catch (ResponseStatusException e) {
-
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                     .body(ApiResponse.error(e.getMessage()));
         }
@@ -125,17 +119,15 @@ public class TeamController {
             return ResponseEntity.status(HttpStatus.OK)
                     .body(ApiResponse.success("팀이 성공적으로 삭제되었습니다.", deleteTeamResponse));
 
-        // 팀 없음 에러 처리 // UI상 예외 발생 X -> 보안상 구현
+        // 팀 없음 에러 처리 -> UI상 예외 발생 X => 보안상 구현
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(ApiResponse.error(e.getMessage()));
 
-        // 관리자 아닐 경우 에러 처리 //
+        // 관리자 아닐 경우 에러 처리
         } catch (ResponseStatusException e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                     .body(ApiResponse.error(e.getMessage()));
         }
-
-
     }
 }
