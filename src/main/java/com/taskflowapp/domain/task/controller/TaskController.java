@@ -74,10 +74,12 @@ public class TaskController {
 
     //작업 삭제
     @DeleteMapping("/{taskId}")
-    public void deleteTask(
+    public ResponseEntity<ApiResponse<Void>> deleteTask(
             @PathVariable Long taskId
     ){
         taskService.deleteTask(taskId);
+        ApiResponse<Void> response = ApiResponse.success("Task가 삭제되었습니다.");
+        return ResponseEntity.ok(response);
     }
 
     /**
