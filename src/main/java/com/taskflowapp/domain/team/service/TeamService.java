@@ -1,5 +1,6 @@
 package com.taskflowapp.domain.team.service;
 
+import com.taskflowapp.domain.security.UserDetailsImpl;
 import com.taskflowapp.domain.team.dto.DeleteTeamResponse;
 import com.taskflowapp.domain.team.dto.TeamRequest;
 import com.taskflowapp.domain.team.dto.TeamResponse;
@@ -7,13 +8,17 @@ import com.taskflowapp.domain.team.entity.Team;
 import com.taskflowapp.domain.team.repository.TeamRepository;
 import com.taskflowapp.domain.user.dto.response.MemberResponseDto;
 import com.taskflowapp.domain.user.entity.User;
+import com.taskflowapp.domain.user.enums.UserRole;
 import com.taskflowapp.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -25,7 +30,13 @@ public class TeamService {
 
     // 팀 생성 //
     @Transactional
-    public TeamResponse createTeam(TeamRequest teamRequest) {
+    public TeamResponse createTeam(TeamRequest teamRequest, UserDetailsImpl userDetails) {
+
+        // 관리자만 팀 생성 가능
+        if (!Objects.equals(userDetails.getAuthUser().getRole(), UserRole.ADMIN)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "팀 생성은 관리자만 가능합니다.");
+        }
+
         // 팀 중복 에러
         if (teamRepository.existsByName(teamRequest.getName())) {
             throw new IllegalArgumentException("팀 이름이 이미 존재합니다.");
@@ -121,8 +132,14 @@ public class TeamService {
 
     // 팀 수정 //
     @Transactional
-    public TeamResponse updateTeam(TeamRequest teamRequest, Long teamId) {
+    public TeamResponse updateTeam(TeamRequest teamRequest, Long teamId, UserDetailsImpl userDetails) {
 
+        // 관리자만 팀 수정 가능
+        if (!Objects.equals(userDetails.getAuthUser().getRole(), UserRole.ADMIN)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "팀 수정은 관리자만 가능합니다.");
+        }
+
+        // 팀 없음 에러
         Team team = teamRepository.findById(teamId).orElseThrow(
                 () -> new IllegalArgumentException("팀을 찾을 수 없습니다.")
         );
@@ -155,7 +172,12 @@ public class TeamService {
 
     // 팀 삭제 //
     @Transactional
-    public DeleteTeamResponse deleteTeam(Long teamId) {
+    public DeleteTeamResponse deleteTeam(Long teamId, UserDetailsImpl userDetails) {
+
+        // 관리자만 팀 삭제 가능
+        if (!Objects.equals(userDetails.getAuthUser().getRole(), UserRole.ADMIN)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "팀 삭제는 관리자만 가능합니다.");
+        }
 
         Team team = teamRepository.findById(teamId).orElseThrow(
                 () -> new IllegalArgumentException("팀을 찾을 수 없습니다.")
