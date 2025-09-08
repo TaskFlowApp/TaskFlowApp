@@ -60,8 +60,17 @@ public class TaskService {
 
     //작업 목록 조회
     @Transactional(readOnly = true)
-    public PageResponse<TaskResponse> getTasks(Pageable pageable, Status status){
-        Page<Task> page = taskRepository.findByStatusAndDeletedFalse(status, PageRequest.of(pageable.getPageNumber(), pageable.getPageSize()));
+    public PageResponse<TaskResponse> getTasks(Pageable pageable, Status status, Long assigneeId){
+        Page<Task> page;
+        if(assigneeId != null && status != null ){
+            page = taskRepository.findAllByAssigneeIdAndStatusAndDeletedFalse(assigneeId,status, PageRequest.of(pageable.getPageNumber(), pageable.getPageSize()));
+        }else if(assigneeId != null){
+            page = taskRepository.findAllByAssigneeIdAndDeletedFalse(assigneeId, PageRequest.of(pageable.getPageNumber(), pageable.getPageSize()));
+        }else if(status != null) {
+            page = taskRepository.findAllByStatusAndDeletedFalse(status, PageRequest.of(pageable.getPageNumber(), pageable.getPageSize()));
+        }else{
+            page = taskRepository.findAllByDeletedFalse( PageRequest.of(pageable.getPageNumber(), pageable.getPageSize()));
+        }
         Page<TaskResponse> mappedPage = page.map(task -> new TaskResponse(
                 task.getId(),
                 task.getTitle(),
