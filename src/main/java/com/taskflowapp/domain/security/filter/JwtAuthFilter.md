@@ -3,6 +3,8 @@
 ```java
 package com.taskflowapp.domain.security;
 
+import com.taskflowapp.domain.security.authuser.UserDetailsServiceImpl;
+import com.taskflowapp.domain.security.jwt.JwtProvider;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -61,7 +63,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             try {
                 // 추출한 username으로 인증 정보 설정
                 setAuthentication(info.getSubject());
-            } 
+            }
             // 인증 설정 중 에러 발생 시 중단 
             catch (Exception e) {
                 log.error(e.getMessage());
@@ -81,7 +83,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         Authentication authentication = createAuthentication(username);
         // context에 인증 객체 넣기
         context.setAuthentication(authentication);
-        
+
         // Spring Security의 전역 공간에 context 저장
         SecurityContextHolder.setContext(context);
     }

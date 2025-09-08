@@ -3,6 +3,7 @@
 ```java
 package com.taskflowapp.domain.security;
 
+import com.taskflowapp.domain.security.jwt.TokenPayload;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -42,7 +43,7 @@ public class JwtProvider {
     // 토큰 서명(Signature) 생성 및 검증 시 사용하는 키 객체
     // Base64 디코딩한 secretKey로 생성
     private SecretKey key;
-    
+
     // 기본 생성자(생략)
     // 생성자 시점에서는 @Value로 주입될 secretKey 값이 아직 없을 수 있음 -> 바로 초기화시 오류 발생 가능
     public JwtProvider() {

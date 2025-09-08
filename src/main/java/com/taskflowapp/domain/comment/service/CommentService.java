@@ -5,7 +5,7 @@ import com.taskflowapp.domain.comment.dto.response.CommentPageResponse;
 import com.taskflowapp.domain.comment.dto.response.CommentResponse;
 import com.taskflowapp.domain.comment.entity.Comment;
 import com.taskflowapp.domain.comment.repository.CommentRepository;
-import com.taskflowapp.domain.security.UserDetailsImpl;
+import com.taskflowapp.domain.security.authuser.UserDetailsImpl;
 import com.taskflowapp.domain.task.entity.Task;
 import com.taskflowapp.domain.task.repository.TaskRepository;
 import com.taskflowapp.domain.user.entity.User;

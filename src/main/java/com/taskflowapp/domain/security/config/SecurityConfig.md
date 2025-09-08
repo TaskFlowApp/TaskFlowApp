@@ -3,6 +3,9 @@
 ```java
 package com.taskflowapp.domain.security;
 
+import com.taskflowapp.domain.security.authuser.UserDetailsServiceImpl;
+import com.taskflowapp.domain.security.filter.JwtAuthFilter;
+import com.taskflowapp.domain.security.jwt.JwtProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,7 +31,7 @@ public class SecurityConfig {
 
     private final JwtProvider jwtProvider;
     private final UserDetailsServiceImpl userDetailsService;
-    
+
     // 인증 매니저(AuthenticationManager) Bean 등록
     @Bean
     public AuthenticationManager authenticationManagerBean(
@@ -69,12 +72,12 @@ public class SecurityConfig {
                         .requestMatchers("/auth/**").permitAll()
                         // 그 외 요청은 반드시 인증을 거쳐야만 접근 가능
                         .anyRequest().authenticated()    // "/auth/register", "/auth/login" -> 하면 안됨
-                );    
+                );
 
         // Spring Security의 기본 필터(UsernamePasswordAuthenticationFilter)보다 
         // 먼저 커스텀 JWT 인증 필터인 jwtAuthFilter()를 실행하도록 순서 설정
         http.addFilterBefore(jwtAuthFilter(), UsernamePasswordAuthenticationFilter.class);
-        
+
         // 최종 빌드
         // SecurityFilterChain 객체 생성 후 Spring Security에 등록
         return http.build();

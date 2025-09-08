@@ -1,6 +1,6 @@
 package com.taskflowapp.domain.user.enums;
 
-import com.taskflowapp.domain.auth.constant.AuthConstant;
+import com.taskflowapp.domain.user.constant.AdminConstant;
 
 public enum UserRole {
     ADMIN,    // 관리자
@@ -18,7 +18,7 @@ public enum UserRole {
      * 이메일: admin@example.com
     */
     public static UserRole fromRegistration(String username, String email) {
-        if (AuthConstant.ADMIN_USERNAME.equals(username) && AuthConstant.ADMIN_EMAIL.equals(email)) {
+        if (AdminConstant.ADMIN_USERNAME.equals(username) && AdminConstant.ADMIN_EMAIL.equals(email)) {
             return ADMIN;
         }
         return USER;

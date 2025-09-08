@@ -1,4 +1,4 @@
-package com.taskflowapp.domain.security;
+package com.taskflowapp.domain.security.authuser;
 
 import com.taskflowapp.domain.user.entity.User;
 import com.taskflowapp.domain.user.repository.UserRepository;

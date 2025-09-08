@@ -1,5 +1,8 @@
-package com.taskflowapp.domain.security;
+package com.taskflowapp.domain.security.config;
 
+import com.taskflowapp.domain.security.filter.JwtAuthFilter;
+import com.taskflowapp.domain.security.jwt.JwtProvider;
+import com.taskflowapp.domain.security.authuser.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
