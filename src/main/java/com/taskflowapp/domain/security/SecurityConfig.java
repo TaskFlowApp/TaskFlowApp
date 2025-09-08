@@ -45,14 +45,11 @@ public class SecurityConfig {
             throws Exception {
         http.cors(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
-                .sessionManagement(
-                        (sessionManagement)
-                                -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(
-                        auth -> auth
-                                .requestMatchers("/auth/**").permitAll()
-                                .anyRequest()
-                                .authenticated());    // "/auth/register", "/auth/login" -> 하면 안됨
+                .sessionManagement((sessionManagement) -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/auth/**").permitAll()
+                        .anyRequest().authenticated()
+                );    // "/auth/register", "/auth/login" -> 하면 안됨
 
         http.addFilterBefore(jwtAuthFilter(), UsernamePasswordAuthenticationFilter.class);
 
