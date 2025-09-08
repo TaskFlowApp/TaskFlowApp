@@ -163,10 +163,14 @@ public class TeamService {
 
         // 팀에 속한 멤버들 팀 해제
         // 해당 팀 소속된 모든 유저의 team 필드 null로 수정
-        team.getMembers().forEach(user -> user.changeTeam(null));
+        // null로 수정 안하면, 팀에 멤버 추가 시 삭제된 팀의 유저가 안뜸
+        team.getMembers().forEach(
+                user -> user.changeTeam(null)
+         );
 
-        // 팀 삭제
-        teamRepository.delete(team);
+        // 팀 삭제 -> 소프트 딜리트로 변경
+        // DB 에서 삭제 대신 deleted = true
+        team.softDelete();
 
         return new DeleteTeamResponse("팀이 성공적으로 삭제되었습니다");
     }

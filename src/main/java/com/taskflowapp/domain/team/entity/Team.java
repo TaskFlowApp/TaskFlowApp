@@ -4,6 +4,7 @@ import com.taskflowapp.common.entity.BaseEntity;
 import com.taskflowapp.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.Where;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +15,10 @@ import java.util.List;
 @Table(name = "teams")
 @Builder
 @AllArgsConstructor
+// 소프트딜리트 적용 위해 추가
+// DB에 남아있는 삭제된 팀을 검색에서 제외하기 위함
+// Hibernate가 자동으로 조건 붙여줌
+@Where(clause = "deleted = false")
 public class Team extends BaseEntity {
 
     @Id
