@@ -53,7 +53,7 @@ public class TeamService {
     public List<TeamResponse> getAllTeams() {
 
         // 1. 엔티티 저장 (DB 저장) //
-        List<Team> teams = teamRepository.findAll();
+        List<Team> teams = teamRepository.findAllTeams();
 
         // 2. DTO 변환 (엔티티 리스트 -> DTO 리스트) //
         List<TeamResponse> teamResponses = teams.stream()
