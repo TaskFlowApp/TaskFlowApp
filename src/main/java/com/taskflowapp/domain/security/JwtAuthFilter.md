@@ -103,7 +103,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     // 인증을 건너뛸 경로인지 확인하는 메서드
     private boolean shouldSkipAuthentication(HttpServletRequest request) {
         // 요청의 URL(컨텍스트 제외한 경로)를 문자열로 얻음
-        // 컨텍스트 경로(context path): 애플리케이션이 배포된 기본 경로
+        // 컨텍스트 경로(context path): 애플리케이션이 배포된 기본 기준 경로(root path)
         String path = request.getRequestURI();
 
         // 화이트리스트 목록을 배열로 정의 -> 해당 경로는 JWT 검사 건너뜀
