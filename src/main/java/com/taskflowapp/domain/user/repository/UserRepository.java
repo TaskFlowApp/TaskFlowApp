@@ -2,6 +2,7 @@ package com.taskflowapp.domain.user.repository;
 
 import com.taskflowapp.domain.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 import java.util.Optional;
@@ -21,4 +22,19 @@ public interface UserRepository extends JpaRepository<User, Long> {
     // 팀 아이디를 기준으로 등록되어 있는 유저를 찾아서 출력
     List<User> findAllByTeamIdAndDeletedFalse(Long teamId);
 
+    /**  검색 기능 JPQL 활용 */
+    /**
+     * 전역 검색용 사용자 상위 후보
+     * username / name / email 부분 일치
+     * 상위 N 제한은 검색 서비스(SearchService)에서 stream().limit(N)로 처리
+     */
+
+    @Query("""
+    select user from User user
+    where user.deleted = false
+    and ( lower(user.username) like lower(concat('%', :q, '%'))
+       or lower(user.name)     like lower(concat('%', :q, '%'))
+       or lower(user.email)    like lower(concat('%', :q, '%')) )
+    """)
+    List<User> searchUsersTop(String q);            // 상위 5개는 서비스에서 stream().limit(5)
 }
