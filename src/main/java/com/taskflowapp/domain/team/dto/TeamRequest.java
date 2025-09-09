@@ -9,7 +9,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public class TeamRequest {
 
-    @NotBlank(message = "유저이름은 필수 입력 값입니다.")
+    @NotBlank(message = "팀 이름은 필수 입력 값입니다.")
     @Size(max = 50, message = "50자까지 입력 가능합니다.")
     private String name;
 
