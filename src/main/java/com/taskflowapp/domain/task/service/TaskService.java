@@ -109,16 +109,6 @@ public class TaskService {
         );
         String oldStatus = task.getStatus().toString();
         task.updateTaskStatus(request.getStatus());
-        String newStatus = task.getStatus().toString();
-
-        Activity activityLog = Activity.builder()
-                .user(user)
-                .task(task)
-                .actionType("TASK_STATUS_CHANGED")
-                .content("'" + task.getTitle() + "' 업무의 상태를 " + oldStatus + "에서 " + newStatus + "로 변경했습니다.")
-                .build();
-        activityService.saveActivity(activityLog);
-
         return TaskResponse.from(task);
     }
 
