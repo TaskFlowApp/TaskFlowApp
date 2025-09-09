@@ -105,7 +105,9 @@ public class TaskController {
 
     /**
      * 작업 검색 (페이징)
-     * 엔드포인트 : GET /api/tasks/search?q={query}&page=0&size=10
+     * GET /api/tasks/search?q={query}&page=0&size=10
+     * - 의미: 작업 전용 검색 + 페이징 (정확히 스펙의 응답 형태를 반환)
+     * - CRUD: R(Read)
      */
     // todo `/api/tasks/search` 경로를 유지하기 위해 TaskController 에 둘지 확인
     @GetMapping("/search")
