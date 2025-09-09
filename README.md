@@ -47,6 +47,7 @@
     - [댓글 COMMENT](#COMMENT)
     - [대시보드 DASHBOARD ](#DASHBOARD)
     - [활동 로그 ACTIVITY](#ACTIVITY)
+    - [검색 SEARCH](#SEARCH)
 - [버전 관리 & 변경 이력](#-버전-관리--변경-이력)
 - [기여 가이드](#-기여-가이드)
 
@@ -59,17 +60,37 @@ TaskFlow는 인증/작업/댓글/팀 관리/활동 로그/대시보드/검색으
 
 ## 기술 스택
 - **Backend**: Spring Boot, Java 17+, JPA/Hibernate, Validation
-- **Auth**: JWT (Bearer Token)
+- **Auth**: **JWT (Bearer Token)**
 - **DB**: MySQL
 - **Build**: `build.gradle`, `application.yml`
 - **Docs**: Markdown (README)
 
 ---
 ## 보안 인증
-
+* 인증 방식 : **JWT Bearer**
+* 요청 헤더 : `Authorization : Bearer <JWT>`
+* 비보호(WhiteList) : `/api/auth/register`, `/api/auth/login`
+* 차단(BlakList) : `/api/**`
 ---
 ## 유효성 검사 규칙
-
+- 공통 조건: `@NotBlank`
+- username:
+    - 4~20자 : `@Size(min = 4, max = 20)`
+    - 영문/숫자만 허용 : `@Pattern(regexp = "^[A-Za-z0-9]+$")`
+- email:
+    - 유효한 이메일 형식 : `@Email`
+    - 도메인과, 최상위 도메인 입력 필수(예: test@test.com) : 
+      `@Pattern(regexp = "^(?!\\.)[A-Za-z0-9._%+-]+(?<!\\.)@" +
+                "[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?" +
+                "(?:\\.[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?)*" +
+                "\\.[A-Za-z]{2,}$")`
+    - 특정 아이디와 이메일(admin, admin@example.com)을 관리자(ADMIN)으로 지정
+- password:
+    - 8~64자 : `@Size(min = 8, max = 64)`
+    - 영문/숫자/특수문자 조합 `@Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[!@#$%^&*(),.?\":{}|<>]).{8,64}$")`
+    - 비밀번호는 Bcrypt 기반 해시 저장
+- name:
+    - 2~50자 : `@Size(min = 2, max = 50`
 ---
 ## ERD
 ![img.png](ERD.png)
@@ -82,7 +103,6 @@ TaskFlow는 인증/작업/댓글/팀 관리/활동 로그/대시보드/검색으
 |------------------------------|-------------|----------------------------------------|-----------------------------|
 | 팀 생성           | `POST`   | `/api/teams`                           | 새로운 팀을 생성합니다.               |
 | 팀 목록 조회         | `GET`    | `/api/teams`                           | 내가 속한 팀 목록을 조회합니다.          |
-| 특정 팀 조회         | `GET`    | `/api/teams/{teamId}`                  | 특정 팀의 상세 정보를 조회합니다.         |
 | 팀 정보 수정         | `PUT`    | `/api/teams/{teamId}`                  | 특정 팀의 정보를 수정합니다.            |
 | 팀 삭제           | `DELETE`  | `/api/teams/{teamId}`                  | 특정 팀을 삭제합니다.                |
 | 팀 멤버 추가         | `POST`   | `/api/teams/{teamId}/members`          | 특정 팀에 멤버를 초대합니다.            |
@@ -93,11 +113,11 @@ TaskFlow는 인증/작업/댓글/팀 관리/활동 로그/대시보드/검색으
 ### [USER]
 | 기능        | HTTP Method | Endpoint URI         | 설명                         |
 |--------------------|-------------|----------------------|----------------------------|
-| 회원가입      | `POST`   | `/api/auth/register` | 새로운 사용자를 등록합니다.            |
-| 로그인       | `POST`   | `/api/auth/login`    | 사용자 인증 후 JWT를 발급합니다.       |
-| 회원탈퇴      | `DELETE`  | `/api/auth/withdraw` | 현재 로그인된 사용자를 탈퇴 처리합니다.     |
-| 내 정보 조회    | `GET`    | `/api/users/me`      | 현재 로그인된 사용자의 정보를 조회합니다.    |
-| 사용자 목록 조회  | `GET`    | `/api/users`         | 팀 초대를 위한 사용자 목록을 조회합니다.    |
+| 회원가입      | `POST`      | `/api/auth/register` | 새로운 사용자를 등록합니다.            |
+| 로그인       | `POST`      | `/api/auth/login`    | 사용자 인증 후 JWT를 발급합니다.       |
+| 회원탈퇴      | `POST`      | `/api/auth/withdraw` | 현재 로그인된 사용자를 탈퇴 처리합니다.     |
+| 내 정보 조회    | `GET`       | `/api/users/me`      | 현재 로그인된 사용자의 정보를 조회합니다.    |
+| 사용자 목록 조회  | `GET`       | `/api/users`         | 팀 초대를 위한 사용자 목록을 조회합니다.    |
 
 ### [TASK]
 | 기능       | HTTP Method | Endpoint URI                                                   | 설명                         |
@@ -127,11 +147,15 @@ TaskFlow는 인증/작업/댓글/팀 관리/활동 로그/대시보드/검색으
 | 주간 작업 추세 조회 | `GET`    | `/api/dashboard/weekly-trend`              | 주간 작업 추세를 조회합니다.             |
 
 ### [ACTIVITY]
-| 기능          | HTTP Method | Endpoint URI                                                                                                 | 설명                               |
-|------------------------|-------------|--------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------|
-| 활동 로그 조회     | `GET`    | `/api/activities?page=0&size=10&type=TASK_CREATED&userId=1&taskId=1&startDate=2025-09-09&endDate=2025-09-09` | 활동 로그를 조건부/페이지네이션 조회합니다.           |
-| 통합 검색       | `GET`    | `/api/search?q={query}`                                                                                      | 검색어를 통해 통합 검색 결과를 조회합니다.            |
-| 작업 검색 (페이징)   | `GET`    | `/api/tasks/search?q={query}&page=0&size=10`                                                                 | 작업 검색 결과를 페이지네이션 조회합니다.             |
+| 기능          | HTTP Method | Endpoint URI                   | 설명                               |
+|------------------------|-------------|--------------------------------|-------------------------------------------------------------------|
+| 활동 로그 조회     | `GET`    | `GET /api/activities`          | 활동 로그를 조건부/페이지네이션 조회합니다.           |
+
+### [SEARCH]
+| 기능          | HTTP Method | Endpoint URI                                         | 설명                               |
+|------------------------|-------------|------------------------------------------------------|-------------------------------------------------------------------|
+| 통합 검색       | `GET`    | `/api/search?q={query}`                              | 검색어를 통해 통합 검색 결과를 조회합니다.            |
+| 작업 검색 (페이징)   | `GET`    | `/api/tasks/search?q={query}&page=0&size=10`         | 작업 검색 결과를 페이지네이션 조회합니다.             |
 
 ---
 
