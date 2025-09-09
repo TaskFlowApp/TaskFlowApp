@@ -11,6 +11,7 @@ public class ActivityResponse {
 
     private final Long id;
     private final String type;
+    private final Long userId;
     private final UserResponse user;
     private final Long taskId;
     private final String description;

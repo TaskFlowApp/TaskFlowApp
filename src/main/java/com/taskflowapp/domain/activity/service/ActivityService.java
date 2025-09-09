@@ -23,7 +23,7 @@ import org.springframework.transaction.annotation.Propagation;
 @Transactional(readOnly = true)
 public class ActivityService {
 
-    private final ActivityRepository activityRepository;            // final 로 변경 - @RequiredArgsConstructor 로 생성자 주입
+    private final ActivityRepository activityRepository;         // final 로 변경 - @RequiredArgsConstructor 로 생성자 주입
 
     public Page<ActivityResponse> getActivities(
             Pageable pageable,
@@ -41,11 +41,9 @@ public class ActivityService {
             }
 
             if (userId != null) {
-                // This assumes 'user' is a relationship, so we get the ID from the related entity
                 predicates.add(cb.equal(root.get("user").get("id"), userId));
             }
             if (taskId != null) {
-                // This assumes 'task' is a relationship, so we get the ID from the related entity
                 predicates.add(cb.equal(root.get("task").get("id"), taskId));
             }
             if (startDate != null) {
