@@ -1,4 +1,4 @@
-package com.taskflowapp.domain.security;
+package com.taskflowapp.domain.security.authuser;
 
 import com.taskflowapp.domain.user.entity.User;
 import com.taskflowapp.domain.user.enums.UserRole;
@@ -31,7 +31,9 @@ public class UserDetailsImpl implements UserDetails {
         return authorities;
     }
 
-    public Long getUserId() {return authUser.getId();}
+    public Long getUserId() {
+        return authUser.getId();
+    }
 
     @Override
     public String getPassword() {
@@ -43,6 +45,10 @@ public class UserDetailsImpl implements UserDetails {
         return authUser.getUsername();
     }
 
+    /** UserDetails 인터페이스에서 아래 메서드들은 이미 구현된 디폴트 메서드
+     * 구현 클래스에서 오버라이드하지 않으면, 인터페이스의 디폴트 구현이 그대로 상속됨
+     * -> 필요할 때만 오버라이드해서 재정의 가능
+     * => 현재 오버라이드(재정의)할 필요 X
     @Override
     public boolean isAccountNonExpired() {
         return true;
@@ -62,4 +68,5 @@ public class UserDetailsImpl implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+    */
 }

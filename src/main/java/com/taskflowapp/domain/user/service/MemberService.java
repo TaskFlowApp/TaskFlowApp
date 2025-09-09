@@ -1,6 +1,6 @@
 package com.taskflowapp.domain.user.service;
 
-import com.taskflowapp.domain.security.UserDetailsImpl;
+import com.taskflowapp.domain.security.authuser.UserDetailsImpl;
 import com.taskflowapp.domain.team.dto.TeamResponse;
 import com.taskflowapp.domain.team.entity.Team;
 import com.taskflowapp.domain.team.repository.TeamRepository;

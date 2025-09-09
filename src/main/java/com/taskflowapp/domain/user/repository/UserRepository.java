@@ -9,6 +9,13 @@ import java.util.List;
 import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long> {
+
+    /*
+    @Query("SELECT u " +
+            "FROM User u " +
+            "WHERE u.username = : username AND u.deleted = false")
+    Optional<User> findByUsername(@Param("username") String username);
+    */
     Optional<User> findByUsernameAndDeletedFalse(String username);
 
     Optional<User> findByIdAndDeletedFalse(Long userId);
@@ -26,7 +33,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
     // 팀 아이디를 기준으로 등록되어 있는 유저를 찾아서 출력
     @Query("SELECT u FROM User u JOIN FETCH u.team WHERE u.team.id = :teamId AND u.deleted = false")
     List<User> findTeamMembers(@Param("teamId") Long teamId);
-    /**  검색 기능 JPQL 활용 */
+
+    // 검색 기능 JPQL 활용
     /**
      * 전역 검색용 사용자 상위 후보
      * username / name / email 부분 일치

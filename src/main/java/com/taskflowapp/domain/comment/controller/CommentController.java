@@ -5,7 +5,7 @@ import com.taskflowapp.domain.comment.dto.request.CommentCreateRequest;
 import com.taskflowapp.domain.comment.dto.response.CommentPageResponse;
 import com.taskflowapp.domain.comment.dto.response.CommentResponse;
 import com.taskflowapp.domain.comment.service.CommentService;
-import com.taskflowapp.domain.security.UserDetailsImpl;
+import com.taskflowapp.domain.security.authuser.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
