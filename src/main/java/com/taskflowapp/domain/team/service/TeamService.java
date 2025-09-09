@@ -1,6 +1,6 @@
 package com.taskflowapp.domain.team.service;
 
-import com.taskflowapp.domain.security.UserDetailsImpl;
+import com.taskflowapp.domain.security.authuser.UserDetailsImpl;
 import com.taskflowapp.domain.team.dto.DeleteTeamResponse;
 import com.taskflowapp.domain.team.dto.TeamRequest;
 import com.taskflowapp.domain.team.dto.TeamResponse;
