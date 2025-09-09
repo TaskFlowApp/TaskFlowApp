@@ -1,6 +1,7 @@
 package com.taskflowapp.domain.activity.dto.response;
 
 import com.taskflowapp.domain.activity.entity.Activity;
+import com.taskflowapp.domain.user.dto.response.UserResponse;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
@@ -10,8 +11,8 @@ public class ActivityResponse {
 
     private final Long id;
     private final String type;
-    // private final UserResponse user;
-    // private final Long taskId;
+    private final UserResponse user;
+    private final Long taskId;
     private final String description;
     private final LocalDateTime timestamp;
 
@@ -21,9 +22,9 @@ public class ActivityResponse {
         this.description = activity.getContent();
         this.timestamp = activity.getCreatedAt();
 
-        /*
         this.user = new UserResponse(activity.getUser());
-        this.taskId = null;
-         */
+        this.userId = activity.getUser().getId();
+        this.taskId = activity.getTask() != null ? activity.getTask().getId() : null;
+
     }
 }

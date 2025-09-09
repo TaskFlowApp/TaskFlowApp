@@ -1,7 +1,7 @@
 package com.taskflowapp.domain.activity.service;
 
 import com.taskflowapp.domain.activity.dto.response.ActivityResponse;
-import com.taskflowapp.domain.activity.entity.Activity; // Added import
+import com.taskflowapp.domain.activity.entity.Activity;
 import com.taskflowapp.domain.activity.repository.ActivityRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
@@ -9,17 +9,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate; // Added import
-import java.time.LocalDateTime; // Added import
-import java.time.LocalTime; // Added import
-import java.util.List; // Added import
-import java.util.ArrayList; // Added import
-import jakarta.persistence.criteria.Predicate; // Added import
-import jakarta.persistence.criteria.CriteriaBuilder; // Added import
-import jakarta.persistence.criteria.CriteriaQuery; // Added import
-import jakarta.persistence.criteria.Root; // Added import
-import org.springframework.data.jpa.domain.Specification; // Added import
-import org.springframework.transaction.annotation.Propagation; // Added import
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.List;
+import java.util.ArrayList;
+import jakarta.persistence.criteria.Predicate;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.transaction.annotation.Propagation;
 
 @Service
 @RequiredArgsConstructor
@@ -42,7 +39,7 @@ public class ActivityService {
             if (type != null && !type.isEmpty()) {
                 predicates.add(cb.equal(root.get("actionType"), type));
             }
-            // Assuming userId and taskId are direct fields or will be uncommented in Activity entity
+
             if (userId != null) {
                 // This assumes 'user' is a relationship, so we get the ID from the related entity
                 predicates.add(cb.equal(root.get("user").get("id"), userId));
