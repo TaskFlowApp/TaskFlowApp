@@ -18,9 +18,15 @@ public interface UserRepository extends JpaRepository<User, Long> {
     */
     Optional<User> findByUsernameAndDeletedFalse(String username);
 
-    Optional<User> findByIdAndDeletedFalse(Long userId);
+    /*
+    @Query("SELECT u " +
+        "FROM User u " +
+        "WHERE u.deleted = false")
+    List<User> findAll();
+    */
+    List<User> findAllByDeletedFalse();
 
-    List<User> findByDeletedFalse();
+    Optional<User> findByIdAndDeletedFalse(Long userId);
 
     boolean existsByUsername(String username);
 
@@ -41,12 +47,12 @@ public interface UserRepository extends JpaRepository<User, Long> {
      * 상위 N 제한은 검색 서비스(SearchService)에서 stream().limit(N)로 처리
      */
     @Query("""
-    select user from User user
-    where user.deleted = false
-    and ( lower(user.username) like lower(concat('%', :q, '%'))
-       or lower(user.name)     like lower(concat('%', :q, '%'))
-       or lower(user.email)    like lower(concat('%', :q, '%')) )
-    """)
+            select user from User user
+            where user.deleted = false
+            and ( lower(user.username) like lower(concat('%', :q, '%'))
+               or lower(user.name)     like lower(concat('%', :q, '%'))
+               or lower(user.email)    like lower(concat('%', :q, '%')) )
+            """)
     List<User> searchUsersTop(String q);
     // 상위 5개는 서비스에서 stream().limit(5)
 }
