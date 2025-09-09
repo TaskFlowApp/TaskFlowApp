@@ -63,7 +63,7 @@ public class ActivityService {
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public Activity saveActivity(Activity activity) {
-        return activityRepository.save(activity);
+    public void saveActivity(Activity activity) {
+        activityRepository.save(activity);
     }
 }
