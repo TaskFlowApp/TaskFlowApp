@@ -8,7 +8,7 @@ import com.taskflowapp.domain.task.dto.TaskUpdateRequest;
 import com.taskflowapp.domain.task.entity.Status;
 import com.taskflowapp.domain.task.entity.Task;
 import com.taskflowapp.domain.task.repository.TaskRepository;
-import com.taskflowapp.domain.user.dto.response.AssigneeResponse;
+
 import com.taskflowapp.domain.user.entity.User;
 import com.taskflowapp.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -41,21 +41,7 @@ public class TaskService {
                 .status(Status.TODO)
                 .build();
         Task savedTask = taskRepository.save(task);
-        return new TaskResponse(
-                savedTask.getId(),
-                savedTask.getTitle(),
-                savedTask.getDescription(),
-                savedTask.getDueDate(),
-                savedTask.getPriority(),
-                savedTask.getStatus(),
-                savedTask.getAssignee().getId(),
-                new AssigneeResponse(
-                        savedTask.getAssignee().getId(),
-                        savedTask.getAssignee().getEmail(),
-                        savedTask.getAssignee().getName(),
-                        savedTask.getAssignee().getRole()),
-                savedTask.getCreatedAt(),
-                savedTask.getUpdatedAt());
+        return TaskResponse.from(savedTask);
     }
 
     //작업 목록 조회
@@ -71,22 +57,7 @@ public class TaskService {
         }else{
             page = taskRepository.findAllByDeletedFalse( PageRequest.of(pageable.getPageNumber(), pageable.getPageSize()));
         }
-        Page<TaskResponse> mappedPage = page.map(task -> new TaskResponse(
-                task.getId(),
-                task.getTitle(),
-                task.getDescription(),
-                task.getDueDate(),
-                task.getPriority(),
-                task.getStatus(),
-                task.getAssignee().getId(),
-                new AssigneeResponse(
-                        task.getAssignee().getId(),
-                        task.getAssignee().getEmail(),
-                        task.getAssignee().getName(),
-                        task.getAssignee().getRole()),
-                task.getCreatedAt(),
-                task.getUpdatedAt()
-        ));
+        Page<TaskResponse> mappedPage = page.map(TaskResponse::from);
         return PageResponse.of(mappedPage);
     }
 
@@ -96,21 +67,7 @@ public class TaskService {
         Task task = taskRepository.findByIdAndDeletedFalse(taskId).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND,"존재하지 않는 Task입니다.")
         );
-        return new TaskResponse(
-                task.getId(),
-                task.getTitle(),
-                task.getDescription(),
-                task.getDueDate(),
-                task.getPriority(),
-                task.getStatus(),
-                task.getAssignee().getId(),
-                new AssigneeResponse(task.getAssignee().getId(),
-                        task.getAssignee().getEmail(),
-                        task.getAssignee().getName(),
-                        task.getAssignee().getRole()),
-                task.getCreatedAt(),
-                task.getUpdatedAt()
-        );
+        return TaskResponse.from(task);
     }
 
     //작업 수정 기능
@@ -120,22 +77,7 @@ public class TaskService {
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND,"존재하지 않는 작업입니다.")
         );
         task.updateTask(request.getTitle(),request.getDescription(),request.getDueDate(),request.getPriority(),request.getStatus());
-        return new TaskResponse(
-                task.getId(),
-                task.getTitle(),
-                task.getDescription(),
-                task.getDueDate(),
-                task.getPriority(),
-                task.getStatus(),
-                task.getAssignee().getId(),
-                new AssigneeResponse(
-                        task.getAssignee().getId(),
-                        task.getAssignee().getEmail(),
-                        task.getAssignee().getName(),
-                        task.getAssignee().getRole()),
-                task.getCreatedAt(),
-                task.getUpdatedAt()
-        );
+        return TaskResponse.from(task);
     }
 
     //작업 상태 업데이트
@@ -145,22 +87,7 @@ public class TaskService {
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND,"존재하지 않는 Task입니다.")
         );
         task.updateTaskStatus(request.getStatus());
-        return new TaskResponse(
-                task.getId(),
-                task.getTitle(),
-                task.getDescription(),
-                task.getDueDate(),
-                task.getPriority(),
-                task.getStatus(),
-                task.getAssignee().getId(),
-                new AssigneeResponse(
-                        task.getAssignee().getId(),
-                        task.getAssignee().getEmail(),
-                        task.getAssignee().getName(),
-                        task.getAssignee().getRole()),
-                task.getCreatedAt(),
-                task.getUpdatedAt()
-        );
+        return TaskResponse.from(task);
     }
 
     @Transactional
