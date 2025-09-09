@@ -1,5 +1,6 @@
 package com.taskflowapp.domain.user.dto.response;
 
+import com.taskflowapp.domain.user.entity.User;
 import com.taskflowapp.domain.user.enums.UserRole;
 import lombok.Getter;
 
@@ -15,6 +16,14 @@ public class UserResponse {
     private UserRole role;
     private final LocalDateTime createdAt;
 
+    public UserResponse(User user) {
+        this.id = user.getId();
+        this.username = user.getUsername();
+        this.email = user.getEmail();
+        this.name = user.getName();
+        this.role = user.getRole();
+        this.createdAt = user.getCreatedAt();
+    }
     public UserResponse(
             Long id,
             String username,

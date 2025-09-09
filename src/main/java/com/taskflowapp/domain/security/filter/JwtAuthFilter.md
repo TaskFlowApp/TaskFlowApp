@@ -140,7 +140,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 # UsernamePasswordAuthenticationToken
 - Authentication 구현체 중 하나로, 주로 사용자 인증 정보를 담는 용도
 
-```java
+```
 // 인증 전(미인증) 용도: 주로 인증을 시도할 때 사용
 new UsernamePasswordAuthenticationToken(principal, credentials);
 
