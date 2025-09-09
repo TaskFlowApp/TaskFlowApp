@@ -21,4 +21,13 @@ public interface TeamRepository extends JpaRepository<Team, Long> {
        or lower(team.description) like lower(concat('%', :q, '%')) )
   """)
     List<Team> searchTeamsTop(String q);
+
+    // 팀 전체 조회 -> N+1 문제 해결 (JPQL)
+    @Query("""
+            select distinct t
+            from Team t
+            left join fetch t.members
+            where t.deleted = false
+    """)
+    List<Team> findAllTeams();
 }

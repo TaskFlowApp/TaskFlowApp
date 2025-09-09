@@ -1,17 +1,18 @@
 package com.taskflowapp.domain.team.controller;
 
 import com.taskflowapp.common.response.ApiResponse;
+import com.taskflowapp.domain.security.authuser.UserDetailsImpl;
 import com.taskflowapp.domain.team.dto.DeleteTeamResponse;
 import com.taskflowapp.domain.team.dto.TeamRequest;
 import com.taskflowapp.domain.team.dto.TeamResponse;
 import com.taskflowapp.domain.team.service.TeamService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
+import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
 
 @RestController
@@ -19,16 +20,33 @@ import java.util.List;
 public class TeamController {
 
     private final TeamService teamService;
+    // try-catch 문
+    // 전역 예외 클래스 생성하게 되면, 성공 응답 외 삭제 예정
+    // 팀 없음 에러 -> UI상 예외 발생 X => 보안상 구현
 
     // 팀 생성 //
     @PostMapping("/teams")
     public ResponseEntity<ApiResponse<TeamResponse>> createTeam(
-            @Valid @RequestBody TeamRequest teamRequest
+            @Valid @RequestBody TeamRequest teamRequest,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
-        TeamResponse createdTeam = teamService.createTeam(teamRequest);
+        // 성공 응답
+        try {
+            TeamResponse createdTeam = teamService.createTeam(teamRequest, userDetails);
 
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.success("팀이 성공적으로 생성되었습니다.", createdTeam));
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(ApiResponse.success("팀이 성공적으로 생성되었습니다.", createdTeam));
+
+        // 실패응답 (중복 팀 에러)
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ApiResponse.error(e.getMessage()));
+
+        // 실패응답 (권한 에러)
+        } catch (ResponseStatusException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(ApiResponse.error(e.getMessage()));
+        }
     }
 
     // 팀 목록 조회 //
@@ -37,6 +55,7 @@ public class TeamController {
     ) {
         List<TeamResponse> teamResponseList = teamService.getAllTeams();
 
+        // 성공응답
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ApiResponse.success("팀 목록을 조회했습니다.", teamResponseList));
     }
@@ -49,33 +68,68 @@ public class TeamController {
     public ResponseEntity<ApiResponse<TeamResponse>> findTeamById(
             @PathVariable Long teamId
     ) {
-        TeamResponse teamResponse = teamService.getTeam(teamId);
+        // 성공응답
+        try {
+            TeamResponse teamResponse = teamService.getTeam(teamId);
 
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(ApiResponse.success("팀 정보를 조회했습니다.",  teamResponse));
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(ApiResponse.success("팀 정보를 조회했습니다.",  teamResponse));
+
+        // 실패응답 (팀 없음 에러)
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(ApiResponse.error(e.getMessage()));
+        }
     }
 
     // 팀 수정 //
     @PutMapping("/teams/{teamId}")
     public ResponseEntity<ApiResponse<TeamResponse>> updateTeam(
             @Valid @RequestBody TeamRequest teamRequest,
-            @PathVariable Long teamId
+            @PathVariable Long teamId,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
-        TeamResponse teamUpdateResponse = teamService.updateTeam(teamRequest, teamId);
+        // 성공응답
+        try {
+            TeamResponse teamUpdateResponse = teamService.updateTeam(teamRequest, teamId, userDetails);
 
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(ApiResponse.success("팀 정보가 성공적으로 업데이트되었습니다.", teamUpdateResponse));
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(ApiResponse.success("팀 정보가 성공적으로 업데이트되었습니다.", teamUpdateResponse));
+
+        // 실패응답 (팀 없음 ,팀 중복 에러)
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(ApiResponse.error(e.getMessage()));
+
+        // 실패응답 (권한 에러)
+        } catch (ResponseStatusException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(ApiResponse.error(e.getMessage()));
+        }
     }
 
     // 팀 삭제 //
     @DeleteMapping("/teams/{teamId}")
     public ResponseEntity<ApiResponse<DeleteTeamResponse>> deleteTeam(
-            @PathVariable Long teamId
+            @PathVariable Long teamId,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
-        DeleteTeamResponse deleteTeamResponse = teamService.deleteTeam(teamId);
+        // 성공응답
+        try {
+            DeleteTeamResponse deleteTeamResponse = teamService.deleteTeam(teamId, userDetails);
 
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(ApiResponse.success("팀이 성공적으로 삭제되었습니다.", deleteTeamResponse));
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(ApiResponse.success("팀이 성공적으로 삭제되었습니다.", deleteTeamResponse));
 
+        // 실패응답 (팀 없음 에러)
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(ApiResponse.error(e.getMessage()));
+
+        // 실패응답 (권한 에러)
+        } catch (ResponseStatusException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(ApiResponse.error(e.getMessage()));
+        }
     }
 }
