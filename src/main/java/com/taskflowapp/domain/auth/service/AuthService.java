@@ -5,8 +5,8 @@ import com.taskflowapp.domain.auth.dto.request.AuthRegisterRequest;
 import com.taskflowapp.domain.auth.dto.request.AuthWithdrawRequest;
 import com.taskflowapp.domain.auth.dto.response.AuthLoginResponse;
 import com.taskflowapp.domain.auth.dto.response.AuthRegisterResponse;
-import com.taskflowapp.domain.security.JwtProvider;
-import com.taskflowapp.domain.security.TokenPayload;
+import com.taskflowapp.domain.security.jwt.JwtProvider;
+import com.taskflowapp.domain.security.jwt.TokenPayload;
 import com.taskflowapp.domain.user.entity.User;
 import com.taskflowapp.domain.user.enums.UserRole;
 import com.taskflowapp.domain.user.repository.UserRepository;
@@ -80,8 +80,6 @@ public class AuthService {
 
         return new AuthLoginResponse(accessToken);
     }
-
-    // 로그아웃
 
     // 회원탈퇴
     @Transactional

@@ -25,7 +25,9 @@ public class SearchController {
     /**
      * 통합 검색 (tasks/users/teams)
      * GET /api/search?q={query}
-     *
+     * - 의미: 단일 쿼리로 작업/사용자/팀을 동시에 상위 10개 내에서 빠르게 조회
+     * - CRUD: R(Read)
+     * - 검증: q는 필수
      */
     @GetMapping
     public ResponseEntity<ApiResponse<SearchResponse>> searchAll(

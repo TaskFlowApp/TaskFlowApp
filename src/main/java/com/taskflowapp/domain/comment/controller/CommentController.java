@@ -5,7 +5,7 @@ import com.taskflowapp.domain.comment.dto.request.CommentCreateRequest;
 import com.taskflowapp.domain.comment.dto.response.CommentPageResponse;
 import com.taskflowapp.domain.comment.dto.response.CommentResponse;
 import com.taskflowapp.domain.comment.service.CommentService;
-import com.taskflowapp.domain.security.UserDetailsImpl;
+import com.taskflowapp.domain.security.authuser.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -72,7 +72,8 @@ public class CommentController {
             @PathVariable Long commentId,
             @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
-        commentService.deleteComment(taskId, commentId, userDetails);
-        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("댓글이 삭제되었습니다."));
+        String message = commentService.deleteComment(taskId, commentId, userDetails);
+
+        return ResponseEntity.ok(ApiResponse.success(message, null));
     }
 }

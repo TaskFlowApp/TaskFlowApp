@@ -9,11 +9,24 @@ import java.util.List;
 import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long> {
+
+    /*
+    @Query("SELECT u " +
+            "FROM User u " +
+            "WHERE u.username = : username AND u.deleted = false")
+    Optional<User> findByUsername(@Param("username") String username);
+    */
     Optional<User> findByUsernameAndDeletedFalse(String username);
 
-    Optional<User> findByIdAndDeletedFalse(Long userId);
+    /*
+    @Query("SELECT u " +
+        "FROM User u " +
+        "WHERE u.deleted = false")
+    List<User> findAll();
+    */
+    List<User> findAllByDeletedFalse();
 
-    List<User> findByDeletedFalse();
+    Optional<User> findByIdAndDeletedFalse(Long userId);
 
     boolean existsByUsername(String username);
 
@@ -26,19 +39,20 @@ public interface UserRepository extends JpaRepository<User, Long> {
     // 팀 아이디를 기준으로 등록되어 있는 유저를 찾아서 출력
     @Query("SELECT u FROM User u JOIN FETCH u.team WHERE u.team.id = :teamId AND u.deleted = false")
     List<User> findTeamMembers(@Param("teamId") Long teamId);
-    /**  검색 기능 JPQL 활용 */
+
+    // 검색 기능 JPQL 활용
     /**
      * 전역 검색용 사용자 상위 후보
      * username / name / email 부분 일치
      * 상위 N 제한은 검색 서비스(SearchService)에서 stream().limit(N)로 처리
      */
     @Query("""
-    select user from User user
-    where user.deleted = false
-    and ( lower(user.username) like lower(concat('%', :q, '%'))
-       or lower(user.name)     like lower(concat('%', :q, '%'))
-       or lower(user.email)    like lower(concat('%', :q, '%')) )
-    """)
+            select user from User user
+            where user.deleted = false
+            and ( lower(user.username) like lower(concat('%', :q, '%'))
+               or lower(user.name)     like lower(concat('%', :q, '%'))
+               or lower(user.email)    like lower(concat('%', :q, '%')) )
+            """)
     List<User> searchUsersTop(String q);
     // 상위 5개는 서비스에서 stream().limit(5)
 }

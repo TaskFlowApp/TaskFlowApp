@@ -15,10 +15,14 @@ import java.util.Optional;
         // 상태별 페이지 조회
         Page<Task> findAllByStatusAndDeletedFalse(Status status, Pageable pageable);
 
+        Page<Task> findAllByAssigneeIdAndStatusAndDeletedFalse(Long assigneeId, Status status, Pageable pageable);
+
+        Page<Task> findAllByAssigneeIdAndDeletedFalse(Long assigneeId, Pageable pageable);
+
+        Page<Task> findAllByDeletedFalse(Pageable pageable);
+
         Optional<Task> findByIdAndDeletedFalse(Long taskId);
 
-        // 상태별 페이지 조회
-        Page<Task> findByStatus(Status status, Pageable pageable);
 
         /** ===== 대시보드 ===== */
         /** --- 대시보드 통계용 카운트 메서드 --- */
@@ -70,10 +74,4 @@ import java.util.Optional;
        or lower(task.description) like lower(concat('%', :q, '%')) )
 """)
         Page<Task> searchTasksTop(String q, Pageable pageable); // 전역 검색 상위 N용 (size=5)
-
-        Page<Task> findAllByAssigneeIdAndStatusAndDeletedFalse(Long assigneeId, Status status, Pageable pageable);
-
-        Page<Task> findAllByAssigneeIdAndDeletedFalse(Long assigneeId, Pageable pageable);
-
-        Page<Task> findAllByDeletedFalse(Pageable pageable);
     }

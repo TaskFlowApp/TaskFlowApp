@@ -7,7 +7,7 @@ import com.taskflowapp.domain.activity.service.ActivityService;
 import com.taskflowapp.domain.dashboard.dto.DashboardStatsResponse;
 import com.taskflowapp.domain.dashboard.dto.MyTasksResponse;
 import com.taskflowapp.domain.dashboard.service.DashboardService;
-import com.taskflowapp.domain.security.UserDetailsImpl;
+import com.taskflowapp.domain.security.authuser.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -68,7 +68,7 @@ public class DashboardController {
     // 4. 최근 활동 (페이지네이션)
     @GetMapping("/activities")
     public ResponseEntity<ApiResponse<PageResponse<ActivityResponse>>> getActivities(Pageable pageable) {
-        Page<ActivityResponse> page = activityService.getActivities(pageable);
+        Page<ActivityResponse> page = activityService.getActivities(pageable, null, null, null, null, null);
         return ResponseEntity.ok(
                 ApiResponse.success("활동 내역 조회 완료", PageResponse.of(page))
         );

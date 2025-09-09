@@ -1,4 +1,4 @@
-package com.taskflowapp.domain.security;
+package com.taskflowapp.domain.security.jwt;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -57,7 +57,7 @@ public class JwtProvider {
         String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
 
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_PREFIX)) {
-            return bearerToken.substring(BEARER_PREFIX.length());    // 상수로
+            return bearerToken.substring(BEARER_PREFIX.length());    // 상수
         }
 
         return null;
@@ -71,6 +71,7 @@ public class JwtProvider {
             log.error("Invalid Token: {}", e.getMessage());
 
         }
+
         return false;
 
     }

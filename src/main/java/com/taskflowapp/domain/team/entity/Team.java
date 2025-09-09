@@ -4,6 +4,7 @@ import com.taskflowapp.common.entity.BaseEntity;
 import com.taskflowapp.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.Where;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +15,10 @@ import java.util.List;
 @Table(name = "teams")
 @Builder
 @AllArgsConstructor
+// 소프트딜리트 적용 위해 추가
+// DB에 남아있는 삭제된 팀을 검색에서 제외하기 위함
+// Hibernate가 자동으로 조건 붙여줌
+@Where(clause = "deleted = false")
 public class Team extends BaseEntity {
 
     @Id
@@ -27,6 +32,9 @@ public class Team extends BaseEntity {
     private String description;
 
     @OneToMany(mappedBy = "team")
+    // 1. 먼저 teams 다 가져옴
+    // 2. 이 후, 각 팀의 멤버 필요할 때마다 users 테이블 개별 조회
+    // => 팀이 N개 있으면 추가로 N번 쿼리 [N + 1 문제]
     private List<User> members; // 멤버의 리스트를 참조하기 위해
 
     // 양방향 연관관계 동기화 멤버 추가

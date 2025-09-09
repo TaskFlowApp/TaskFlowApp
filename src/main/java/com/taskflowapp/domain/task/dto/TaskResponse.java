@@ -2,11 +2,14 @@ package com.taskflowapp.domain.task.dto;
 
 import com.taskflowapp.domain.task.entity.Priority;
 import com.taskflowapp.domain.task.entity.Status;
+import com.taskflowapp.domain.task.entity.Task;
 import com.taskflowapp.domain.user.dto.response.AssigneeResponse;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import java.time.LocalDateTime;
 
 @Getter
+@AllArgsConstructor
 public class TaskResponse {
     private final Long id;
     private final String title;
@@ -19,16 +22,23 @@ public class TaskResponse {
     private final LocalDateTime createdAt;
     private final LocalDateTime updatedAt;
 
-    public TaskResponse(Long id, String title, String description, LocalDateTime dueDate, Priority priority, Status status, Long assigneeId, AssigneeResponse assignee, LocalDateTime createdAt, LocalDateTime updatedAt) {
-        this.id = id;
-        this.title = title;
-        this.description = description;
-        this.dueDate = dueDate;
-        this.priority = priority;
-        this.status = status;
-        this.assigneeId = assigneeId;
-        this.assignee = assignee;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
+    public static TaskResponse from(Task task) {
+        return new TaskResponse(
+                task.getId(),
+                task.getTitle(),
+                task.getDescription(),
+                task.getDueDate(),
+                task.getPriority(),
+                task.getStatus(),
+                task.getAssignee().getId(),
+                new AssigneeResponse(
+                        task.getAssignee().getId(),
+                        task.getAssignee().getEmail(),
+                        task.getAssignee().getName(),
+                        task.getAssignee().getRole()
+                ),
+                task.getCreatedAt(),
+                task.getUpdatedAt()
+        );
     }
 }
