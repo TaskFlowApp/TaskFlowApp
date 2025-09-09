@@ -10,12 +10,10 @@ import com.taskflowapp.domain.task.dto.TaskUpdateRequest;
 import com.taskflowapp.domain.task.entity.Status;
 import com.taskflowapp.domain.task.entity.Task;
 import com.taskflowapp.domain.task.repository.TaskRepository;
-
 import com.taskflowapp.domain.user.entity.User;
 import com.taskflowapp.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -61,13 +59,13 @@ public class TaskService {
     public PageResponse<TaskResponse> getTasks(Pageable pageable, Status status, Long assigneeId){
         Page<Task> page;
         if(assigneeId != null && status != null ){
-            page = taskRepository.findAllByAssigneeIdAndStatusAndDeletedFalse(assigneeId,status, PageRequest.of(pageable.getPageNumber(), pageable.getPageSize()));
+            page = taskRepository.findAllByAssigneeIdAndStatusAndDeletedFalse(assigneeId,status, pageable);
         }else if(assigneeId != null){
-            page = taskRepository.findAllByAssigneeIdAndDeletedFalse(assigneeId, PageRequest.of(pageable.getPageNumber(), pageable.getPageSize()));
+            page = taskRepository.findAllByAssigneeIdAndDeletedFalse(assigneeId, pageable);
         }else if(status != null) {
-            page = taskRepository.findAllByStatusAndDeletedFalse(status, PageRequest.of(pageable.getPageNumber(), pageable.getPageSize()));
+            page = taskRepository.findAllByStatusAndDeletedFalse(status, pageable);
         }else{
-            page = taskRepository.findAllByDeletedFalse( PageRequest.of(pageable.getPageNumber(), pageable.getPageSize()));
+            page = taskRepository.findAllByDeletedFalse( pageable);
         }
         Page<TaskResponse> mappedPage = page.map(TaskResponse::from);
         return PageResponse.of(mappedPage);
@@ -88,7 +86,7 @@ public class TaskService {
         Task task = taskRepository.findByIdAndDeletedFalse(taskId).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND,"존재하지 않는 작업입니다.")
         );
-        task.updateTask(request.getTitle(),request.getDescription(),request.getDueDate(),request.getPriority(),request.getStatus());
+        task.updateTask(request.getTitle(),request.getDescription(),request.getDueDate(),request.getPriority());
 
         Activity activityLog = Activity.builder()
                 .user(user)
