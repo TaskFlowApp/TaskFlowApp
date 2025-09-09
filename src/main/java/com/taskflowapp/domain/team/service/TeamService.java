@@ -30,7 +30,7 @@ public class TeamService {
 
         // 1. 권한 검증 (관리자만 팀 생성 가능)
         if (!Objects.equals(userDetails.getAuthUser().getRole(), UserRole.ADMIN)) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "팀 생성은 관리자만 가능합니다.");
+            throw new IllegalArgumentException("팀 생성은 관리자만 가능합니다.");
         }
 
         // 2. 중복 검증 (중복 팀 에러)
@@ -95,7 +95,7 @@ public class TeamService {
 
         // 1. 권한 검증 (관리자만 팀 생성 가능)
         if (!Objects.equals(userDetails.getAuthUser().getRole(), UserRole.ADMIN)) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "팀 수정은 관리자만 가능합니다.");
+            throw new IllegalArgumentException("팀 수정은 관리자만 가능합니다.");
         }
 
         // 2. 팀 엔티티 조회 (팀 없음 에러)
@@ -129,7 +129,7 @@ public class TeamService {
 
         // 1. 권한 검증 (관리자만 팀 생성 가능)
         if (!Objects.equals(userDetails.getAuthUser().getRole(), UserRole.ADMIN)) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "팀 삭제는 관리자만 가능합니다.");
+            throw new IllegalArgumentException("팀 삭제는 관리자만 가능합니다.");
         }
 
         // 2. 팀 엔티티 조회 (팀 없음 에러)
