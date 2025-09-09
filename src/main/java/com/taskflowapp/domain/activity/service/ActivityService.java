@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 @Transactional(readOnly = true)
 public class ActivityService {
 
-    private ActivityRepository activityRepository;
+    private final ActivityRepository activityRepository;            // final 로 변경 - @RequiredArgsConstructor 로 생성자 주입
 
     public Page<ActivityResponse> getActivities(Pageable pageable) {
         // TODO : 추후 명세서에 따른 필터링 조건 추가 구현

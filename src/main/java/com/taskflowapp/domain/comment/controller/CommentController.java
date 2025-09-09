@@ -72,7 +72,8 @@ public class CommentController {
             @PathVariable Long commentId,
             @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
-        commentService.deleteComment(taskId, commentId, userDetails);
-        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("댓글이 삭제되었습니다."));
+        String message = commentService.deleteComment(taskId, commentId, userDetails);
+
+        return ResponseEntity.ok(ApiResponse.success(message, null));
     }
 }

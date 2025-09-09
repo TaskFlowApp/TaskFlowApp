@@ -29,22 +29,21 @@ public class MemberService {
     // 팀 멤버 추가!
     public TeamResponse addMember(UserDetailsImpl userDetails, Long teamId, MemberRequestDto memberRequestDto) {
         User user = userRepository.findById(memberRequestDto.getUserId()).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "사용자를 찾을 수 없습니다.")
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다.")
         );
         Team team = teamRepository.findById(teamId).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "사용자를 찾을 수 없습니다.")
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "팀을 찾을 수 없습니다.")
         );
 
         // 로그인한 유저가 관리자일 때 관리자는 모든 유저를 관리할 수 있지만 일반사용자는 본인의 상태(팀)만 변경할 수 있다.
         if (!Objects.equals(userDetails.getAuthUser().getRole(), UserRole.ADMIN)) {
             if (!Objects.equals(userDetails.getAuthUser().getId(), user.getId())) {
-                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "일반 사용자는 본인만 팀에 추가할 수 있습니다.");
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "관리자 권한입니다.");
             }
         }
 
         // 유저에 팀 아이디 추가
-        user.changeTeam(team);            // 주인 쪽 설정
-        team.getMembers().add(user);      // 양방향 동기화
+        team.addMember(user);             // 양방향 동기화
         userRepository.save(user); // 주인만 저장하면 된다.
 
         // 응답 Dto 구성
@@ -63,16 +62,15 @@ public class MemberService {
 
     // 추가 가능한 사용자 목록 조회
     @Transactional(readOnly = true)
-    public List<MemberResponseDto> findAllAvailableUsers(Long teamId) {
+    public List<MemberResponseDto> findAvailableUsers(Long teamId) {
         teamRepository.findById(teamId).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "팀을 찾을 수 없습니다")
         );
 
         // 팀에 속해 있지 않은 유저만 조회
-        List<User> users = userRepository.findAllByTeamIsNullAndDeletedFalse();
+        List<User> users = userRepository.findAvailableUsers();
 
         List<MemberResponseDto> availableMembers = users.stream()
-                .filter(user -> user.getTeam() == null || !Objects.equals(user.getTeam().getId(), teamId))
                 .map(MemberResponseDto::from)
                 .collect(Collectors.toList());
         return availableMembers;
@@ -80,16 +78,15 @@ public class MemberService {
 
     // 팀 멤버 목록 조회
     @Transactional(readOnly = true)
-    public List<MemberResponseDto> findTeamMember(Long teamId) {
+    public List<MemberResponseDto> findTeamMembers(Long teamId) {
         teamRepository.findById(teamId).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "팀을 찾을 수 없습니다")
         );
 
         // 팀 아이디를 기준으로 등록되어 있는 유저를 찾아서 출력
-        List<User> users = userRepository.findAllByTeamIdAndDeletedFalse(teamId);
+        List<User> users = userRepository.findTeamMembers(teamId);
 
         List<MemberResponseDto> members = users.stream()
-                .filter(user -> user.getTeam() != null)
                 .map(MemberResponseDto::from)
                 .collect(Collectors.toList());
         return members;
@@ -101,7 +98,7 @@ public class MemberService {
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "팀을 찾을 수 없습니다")
         );
         User user = userRepository.findById(userId).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "사용자가 팀 멤버가 아닙니다")
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다")
         );
 
         // 로그인한 유저가 관리자일 때 관리자는 모든 유저를 관리할 수 있지만 일반사용자는 본인의 상태(팀)만 변경할 수 있다.
@@ -112,8 +109,7 @@ public class MemberService {
         }
 
         // 유저의 팀 아이디 제거
-        team.getMembers().remove(user);
-        user.changeTeam(null);
+        team.removeMember(user);
         userRepository.save(user); // 주인 쪽 저장
 
         List<MemberResponseDto> members = team.getMembers().stream()

@@ -4,6 +4,7 @@ import com.taskflowapp.common.entity.BaseEntity;
 import com.taskflowapp.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
+
 import java.time.LocalDateTime;
 
 @Entity
@@ -49,4 +50,10 @@ public class Task extends BaseEntity {
         this.title= title; this.description = description; this.dueDate=dueDate; this.priority=priority; this.status=status;}
 
     public void updateTaskStatus(Status status){this.status=status;}
+
+//    @Override
+//    public void softDelete() {
+//        super.softDelete();
+//        this.assignee = null;
+//    }
 }
