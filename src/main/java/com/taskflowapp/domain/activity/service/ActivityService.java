@@ -9,17 +9,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate; // Added import
-import java.time.LocalDateTime; // Added import
-import java.time.LocalTime; // Added import
-import java.util.List; // Added import
-import java.util.ArrayList; // Added import
-import jakarta.persistence.criteria.Predicate; // Added import
-import jakarta.persistence.criteria.CriteriaBuilder; // Added import
-import jakarta.persistence.criteria.CriteriaQuery; // Added import
-import jakarta.persistence.criteria.Root; // Added import
-import org.springframework.data.jpa.domain.Specification; // Added import
-import org.springframework.transaction.annotation.Propagation; // Added import
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.List;
+import java.util.ArrayList;
+import jakarta.persistence.criteria.Predicate;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.transaction.annotation.Propagation;
 
 @Service
 @RequiredArgsConstructor
