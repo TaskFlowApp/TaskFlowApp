@@ -9,11 +9,16 @@ import com.taskflowapp.domain.task.dto.TaskStatusUpdateRequest;
 import com.taskflowapp.domain.task.dto.TaskUpdateRequest;
 import com.taskflowapp.domain.task.entity.Status;
 import com.taskflowapp.domain.task.service.TaskService;
+import com.taskflowapp.domain.user.entity.User;
+import com.taskflowapp.domain.user.repository.UserRepository;
+import com.taskflowapp.domain.security.authuser.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequiredArgsConstructor
@@ -21,15 +26,24 @@ import org.springframework.web.bind.annotation.*;
 public class TaskController {
     private final TaskService taskService;
     private final SearchService searchService;      // 작업 검색 페이징을 위해서 넣음
+    private final UserRepository userRepository;
+
+    private User findUserById(Long userId) {
+        return userRepository.findById(userId).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "인증된 사용자를 찾을 수 없습니다.")
+        );
+    }
 
     //작업 생성
     @PostMapping
     public ResponseEntity<ApiResponse<TaskResponse>> saveTask(
-            @RequestBody TaskCreateRequest request
+            @RequestBody TaskCreateRequest request,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
     ){
-      TaskResponse response = taskService.createTask(request);
-      ApiResponse<TaskResponse> apiResponse = ApiResponse.success("Task가 생성되었습니다.", response);
-      return ResponseEntity.status(HttpStatus.CREATED).body(apiResponse);
+        User currentUser = findUserById(userDetails.getUserId());
+        TaskResponse response = taskService.createTask(request, currentUser);
+        ApiResponse<TaskResponse> apiResponse = ApiResponse.success("Task가 생성되었습니다.", response);
+        return ResponseEntity.status(HttpStatus.CREATED).body(apiResponse);
     }
 
     //작업 목록 조회
@@ -55,9 +69,11 @@ public class TaskController {
     @PutMapping("/{taskId}")
     public ResponseEntity<ApiResponse<TaskResponse>> updateTask(
             @RequestBody TaskUpdateRequest request,
-            @PathVariable Long taskId
+            @PathVariable Long taskId,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
     ){
-        TaskResponse response = taskService.updateTask(request, taskId);
+        User currentUser = findUserById(userDetails.getUserId());
+        TaskResponse response = taskService.updateTask(request, taskId, currentUser);
         ApiResponse<TaskResponse> apiResponse = ApiResponse.success("Task가 수정되었습니다.",response);
         return ResponseEntity.ok(apiResponse);
     }
@@ -66,19 +82,23 @@ public class TaskController {
     @PatchMapping("/{taskId}/status")
     public ResponseEntity<ApiResponse<TaskResponse>> updateTaskStatus(
             @RequestBody TaskStatusUpdateRequest request,
-            @PathVariable Long taskId
+            @PathVariable Long taskId,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
     ){
-        TaskResponse response = taskService.updateTaskStatus(request, taskId);
-        ApiResponse<TaskResponse> apiResponse = ApiResponse.success("작업 상태가 업데이되었습니다.",response);
+        User currentUser = findUserById(userDetails.getUserId());
+        TaskResponse response = taskService.updateTaskStatus(request, taskId, currentUser);
+        ApiResponse<TaskResponse> apiResponse = ApiResponse.success("작업 상태가 업데이트되었습니다.",response);
         return ResponseEntity.ok(apiResponse);
     }
 
     //작업 삭제
     @DeleteMapping("/{taskId}")
     public ResponseEntity<ApiResponse<Void>> deleteTask(
-            @PathVariable Long taskId
+            @PathVariable Long taskId,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
     ){
-        taskService.deleteTask(taskId);
+        User currentUser = findUserById(userDetails.getUserId());
+        taskService.deleteTask(taskId, currentUser);
         ApiResponse<Void> response = ApiResponse.success("Task가 삭제되었습니다.");
         return ResponseEntity.ok(response);
     }
