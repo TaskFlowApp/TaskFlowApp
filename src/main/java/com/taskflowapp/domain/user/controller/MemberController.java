@@ -1,7 +1,7 @@
 package com.taskflowapp.domain.user.controller;
 
 import com.taskflowapp.common.response.ApiResponse;
-import com.taskflowapp.domain.security.UserDetailsImpl;
+import com.taskflowapp.domain.security.authuser.UserDetailsImpl;
 import com.taskflowapp.domain.team.dto.TeamResponse;
 import com.taskflowapp.domain.user.dto.request.MemberRequestDto;
 import com.taskflowapp.domain.user.dto.response.MemberResponseDto;

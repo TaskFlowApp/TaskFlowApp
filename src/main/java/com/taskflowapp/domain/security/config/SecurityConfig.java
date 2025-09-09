@@ -1,5 +1,8 @@
-package com.taskflowapp.domain.security;
+package com.taskflowapp.domain.security.config;
 
+import com.taskflowapp.domain.security.filter.JwtAuthFilter;
+import com.taskflowapp.domain.security.jwt.JwtProvider;
+import com.taskflowapp.domain.security.authuser.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -45,14 +48,11 @@ public class SecurityConfig {
             throws Exception {
         http.cors(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
-                .sessionManagement(
-                        (sessionManagement)
-                                -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(
-                        auth -> auth
-                                .requestMatchers("/auth/**").permitAll()
-                                .anyRequest()
-                                .authenticated());    // "/auth/register", "/auth/login" -> 하면 안됨
+                .sessionManagement((sessionManagement) -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/auth/**").permitAll()    // "/auth/register", "/auth/login" -> 하면 안됨
+                        .anyRequest().authenticated()
+                );
 
         http.addFilterBefore(jwtAuthFilter(), UsernamePasswordAuthenticationFilter.class);
 

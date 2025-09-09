@@ -7,7 +7,7 @@ import com.taskflowapp.domain.auth.dto.request.AuthWithdrawRequest;
 import com.taskflowapp.domain.auth.dto.response.AuthLoginResponse;
 import com.taskflowapp.domain.auth.dto.response.AuthRegisterResponse;
 import com.taskflowapp.domain.auth.service.AuthService;
-import com.taskflowapp.domain.security.UserDetailsImpl;
+import com.taskflowapp.domain.security.authuser.UserDetailsImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -40,8 +40,6 @@ public class AuthController {
                 ApiResponse.success("로그인이 완료되었습니다.", authService.login(request))
         );
     }
-
-    // 로그아웃
 
     // 회원탈퇴
     // 명세서상 HTTP 메서드가 "POST"
