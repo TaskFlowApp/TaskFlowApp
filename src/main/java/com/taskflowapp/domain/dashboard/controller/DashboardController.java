@@ -7,7 +7,7 @@ import com.taskflowapp.domain.activity.service.ActivityService;
 import com.taskflowapp.domain.dashboard.dto.DashboardStatsResponse;
 import com.taskflowapp.domain.dashboard.dto.MyTasksResponse;
 import com.taskflowapp.domain.dashboard.service.DashboardService;
-import com.taskflowapp.domain.security.UserDetailsImpl;
+import com.taskflowapp.domain.security.authuser.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
