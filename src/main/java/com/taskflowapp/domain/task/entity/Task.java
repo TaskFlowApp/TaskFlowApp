@@ -46,8 +46,8 @@ public class Task extends BaseEntity {
         this.status = status;
     }
 
-    public void updateTask(String title, String description, LocalDateTime dueDate, Priority priority, Status status){
-        this.title= title; this.description = description; this.dueDate=dueDate; this.priority=priority; this.status=status;}
+    public void updateTask(String title, String description, LocalDateTime dueDate, Priority priority){
+        this.title= title; this.description = description; this.dueDate=dueDate; this.priority=priority;}
 
     public void updateTaskStatus(Status status){this.status=status;}
 
