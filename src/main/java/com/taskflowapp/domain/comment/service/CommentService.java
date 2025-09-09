@@ -1,5 +1,7 @@
 package com.taskflowapp.domain.comment.service;
 
+import com.taskflowapp.domain.activity.entity.Activity;
+import com.taskflowapp.domain.activity.service.ActivityService;
 import com.taskflowapp.domain.comment.dto.request.CommentCreateRequest;
 import com.taskflowapp.domain.comment.dto.response.CommentPageResponse;
 import com.taskflowapp.domain.comment.dto.response.CommentResponse;
@@ -30,6 +32,7 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final UserRepository userRepository;
     private final TaskRepository taskRepository;
+    private final ActivityService activityService;
 
     /// Comment 생성
     @Transactional
@@ -62,6 +65,14 @@ public class CommentService {
                 .content(request.getContent())
                 .build();
         Comment createdComment = commentRepository.save(comment);
+
+        Activity activityLog = Activity.builder()
+                .user(user)
+                .task(task)
+                .actionType("COMMENT_CREATED")
+                .content("'" + task.getTitle() + "' 작업에 새 댓글을 작성했습니다.")
+                .build();
+        activityService.saveActivity(activityLog);
 
         // CommentResponse 반환
         return CommentResponse.from(createdComment, user, taskId);
@@ -114,8 +125,13 @@ public class CommentService {
     /// Comment 삭제
     @Transactional
     public String deleteComment(Long taskId, Long commentId, UserDetailsImpl userDetails) {
+        Long userId = userDetails.getUserId();
+        User currentUser = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("해당 사용자를 찾을 수 없습니다."));
+
         // 댓글 조회
         Comment comment = findCommentById(commentId);
+        Task task = comment.getTask();
 
         // 작성자 본인 확인
         if (!comment.getUser().getId().equals(userDetails.getUserId())) {
@@ -129,6 +145,14 @@ public class CommentService {
 
         // 재귀적 댓글, 답글 삭제
         int deletedCount = deleteCommentRecursively(comment);
+
+        Activity activityLog = Activity.builder()
+                .user(currentUser)
+                .task(task)
+                .actionType("COMMENT_DELETED")
+                .content("'" + task.getTitle() + "' 작업의 댓글을 삭제했습니다.")
+                .build();
+        activityService.saveActivity(activityLog);
 
         // 삭제된 댓글 수에 따라 메시지 분기
         return deletedCount > 1
